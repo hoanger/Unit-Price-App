@@ -1,9 +1,30 @@
-//var myDataRef = new Firebase('https://unitprice.firebaseio.com/');
+var UnitPriceApp = React.createClass ({
+  componentWillMount: function() {
+    var fireBaseURL = new Firebase('https://unitprice.firebaseio.com/');
+    var isLoggedIn = fireBaseURL.getAuth();
+    this.setState({ isLoggedIn: isLoggedIn })
+  },
+  render: function() {
+    var isLoggedIn = this.state.isLoggedIn;
+    if (isLoggedIn) {
+      console.log("User " + isLoggedIn.uid + " is logged in with " + isLoggedIn.provider);
+      return (
+        <MainMenu />
+      );
+    } else {
+      console.log("User is logged out");
+      return (
+        <LoginBox />
+      );
+    };
+  }
+});
+
 
 var LoginBox = React.createClass({
   render: function() {
     return (
-        <div className="commentBox">
+        <div className="loginBox">
             <h1>Unit Price Login</h1>
             <LoginForm />
         </div>
@@ -13,7 +34,7 @@ var LoginBox = React.createClass({
 
 var LoginForm = React.createClass({
   getInitialState: function() {
-    return {userName: '', password: ''};
+    return { userName: '', password: '' };
   },
   handleUserChange: function(e) {
     this.setState({ userName: e.target.value });
@@ -26,17 +47,15 @@ var LoginForm = React.createClass({
     var userN = this.state.userName.trim();
     var pass = this.state.password;
     if (userN === "user" && pass === "pass") {
-        alert("Login successful!");
-        ReactDOM.unmountComponentAtNode(document.getElementById('content')) // Unmount loginbox
+        ReactDOM.unmountComponentAtNode(document.getElementById('content')); // Unmount loginbox
         ReactDOM.render(  // Load MainMenu
           <MainMenu />,
           document.getElementById('content')
-);
+        );
     } else {
         this.setState({userName: '', password: ''});  // Clear state
-        alert("Error Password or Username");  // Error message
+        alert("Error: Incorrect Password or Username");  // Error message
     }
-    
   },
   render: function() {
     return (
@@ -81,7 +100,7 @@ var MainMenu = React.createClass({
 });
 
 ReactDOM.render(
-  <LoginBox />,
+  <UnitPriceApp />,
   document.getElementById('content')
 );
 
