@@ -16,23 +16,22 @@ var UnitPriceApp = React.createClass ({
       console.log("User " + authState.uid + " is logged in with " + authState.provider);
     } else {
       console.log("User is logged out");
-    };
+    }
   },
   render: function() {
     var authState = this.state.isLoggedIn;
     if (authState) {
       return <MainMenu LoggedInID={ authState.uid } />;
     } else {
-      return <LoginBox />
+      return <LoginBox />;
     }
   }
 });
 
-
 var LoginBox = React.createClass({
   render: function() {
     return (
-        <div className="loginBox">
+        <div class="loginBox">
             <h1>Unit Price Login</h1>
             <LoginForm />
         </div>
@@ -42,17 +41,17 @@ var LoginBox = React.createClass({
 
 var LoginForm = React.createClass({
   getInitialState: function() {
-    return { userName: '', password: '' };
+    return { loginName: '', password: '' };
   },
-  handleUserChange: function(e) {
-    this.setState({ userName: e.target.value });
+  handleLoginChange: function(e) {
+    this.setState({ loginName: e.target.value });
   },
   handlePassChange: function(e) {
     this.setState({ password: e.target.value });
   },
   handleSubmit: function(e) {
     e.preventDefault();
-    var userN = this.state.userName.trim();
+    var userN = this.state.loginName.trim();
     var pass = this.state.password;
     if (userN === "user" && pass === "pass") {
         ReactDOM.unmountComponentAtNode(document.getElementById('content')); // Unmount loginbox
@@ -61,40 +60,56 @@ var LoginForm = React.createClass({
           document.getElementById('content')
         );
     } else {
-        this.setState({userName: '', password: ''});  // Clear state
+        this.setState({loginName: '', password: ''});  // Clear state
         alert("Error: Incorrect Password or Username");  // Error message
     }
   },
+  handleCreateAcct: function(e) {
+    e.preventDefault();
+    console.log(e.type, ", ", e.target);
+    // TODO: logout if logged in
+    // TODO: Load create user component
+  },
   render: function() {
     return (
-      <form className="loginForm" onSubmit={this.handleSubmit} >
-        <p>
-          <input
-            type="text"
-            id="userName"
-            placeholder="User Name"
-            value={this.state.userName}
-            onChange={this.handleUserChange}
-            autofocus
+      <div id="loginContainer">
+        <form className="loginForm" onSubmit={this.handleSubmit} >
+          <p>
+            <input
+              type="text"
+              id="loginName"
+              placeholder="Email Address"
+              value={this.state.loginName}
+              onChange={this.handleLoginChange}
+              autofocus
             />
-        </p>
-        <p>
-          <input
-            type="password"
-            id="pswrd"
-            placeholder="Password"
-            value={this.state.password}
-            onChange={this.handlePassChange}
+          </p>
+          <p>
+            <input
+              type="password"
+              id="pswrd"
+              placeholder="Password"
+              value={this.state.password}
+              onChange={this.handlePassChange}
             />
-        </p>
-          <input
-            type="submit"
-            id="loginBtn"
-            value="Login"
-            disabled={ (this.state.userName === '') || (this.state.password ==='') }
+          </p>
+            <input
+              type="submit"
+              id="loginBtn"
+              value="Sign In"
+              disabled={ (this.state.userName === '') || (this.state.password ==='') }
             />
-      </form>
-        
+        </form>
+        <hr />
+        <div id="createBtnContainer">
+          <input
+            type="button"
+            id="createAcct"
+            value="Create a New Account"
+            onClick={this.handleCreateAcct}
+          />
+        </div>
+      </div> 
     );
   }
 });
@@ -103,10 +118,55 @@ var MainMenu = React.createClass({
   render: function() {
     console.log(this.props.loggedInID);
     return (
-        <div className="MainMenu">
-            <h1>Main Menu</h1>
+        <div class="mainMenu">
+          <h1>Main Menu</h1>
         </div>
     );
+  }
+});
+
+var CreateAcct = React.createClass({
+  // TODO: methods for handleSubmit, handleEmailChange, handlePassChange, handleUserChange
+  render: function() {
+    <div class="createAcct">
+        <h1>Create an Account</h1>
+      <form class="createAcctForm" onSubmit={this.handleSubmit} >
+        <p>
+          <input
+            type="text"
+            id="email"
+            placeholder="Email Address"
+            value={this.state.email}
+            onChange={this.handleEmailChange}
+            autofocus
+          />
+        </p>
+        <p>
+          <input
+            type="password"
+            id="pswrd"
+            placeholder="Password"
+            value={this.state.password}
+            onChange={this.handlePassChange}
+          />
+        <p>
+          <input
+            type="text"
+            id="username"
+            placeholder="User Name"
+            value={this.state.username}
+            onChange={this.handleUserChange}
+          />
+        </p>
+        <p>
+          <input
+            type="submit"
+            id="createBtn"
+            value="Create Account"
+          />
+        </p>
+      </form>
+    </div>
   }
 });
 
@@ -114,32 +174,3 @@ ReactDOM.render(
   <UnitPriceApp />,
   document.getElementById('content')
 );
-
-
-
-
-/* function to check userid & password
-function check() {
-    var form = $('#login')[0];
-    console.log(form.userName.value);
-    console.log(form.pswrd.value);
-/* the following code checks whether the entered userid and password are matching
-    if (form.userName.value === "user" && form.pswrd.value === "pass") {
-        window.location.href = "app.html";/* opens the target page while Id & password matches
-    } else {
-        alert("Error Password or Username");/* displays error message
-    }
-}
-
-$("#userName").keyup(function(event){
-    if(event.keyCode == 13){
-        $("#pswrd").focus();
-    }
-});
-
-$("#pswrd").keyup(function(event){
-    if(event.keyCode == 13){
-        $("#loginBtn").click();
-    }
-});
-*/
