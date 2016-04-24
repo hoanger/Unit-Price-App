@@ -67,8 +67,12 @@ var LoginForm = React.createClass({
   handleCreateAcct: function(e) {
     e.preventDefault();
     console.log(e.type, ", ", e.target);
-    // TODO: logout if logged in
     // TODO: Load create user component
+    ReactDOM.unmountComponentAtNode(document.getElementById('content')); // Unmount loginbox
+    ReactDOM.render(  // Load Create Account page
+      <CreateAcct/>,
+      document.getElementById('content')
+    );
   },
   render: function() {
     return (
@@ -114,7 +118,96 @@ var LoginForm = React.createClass({
   }
 });
 
+var CreateAcct = React.createClass({
+  // TODO: handleSubmit should also clear state, logout the current session which should go back to login page
+  getInitialState: function() {
+    return {};
+  },
+  handleEmailChange: function(e) {
+    this.setState({ email: e.target.value });
+  },
+  handlePassChange: function(e) {
+    this.setState({ password: e.target.value });
+  },
+  handlePassChange2: function(e) {
+    tthis.setState({ password2: e.target.value });
+  },
+  handleUserChange: function(e) {
+    this.setState({ username: e.target.value });
+  },
+  handleSubmit: function(e) {
+    e.preventDefault();
+    console.log("Attempting to create user account for ", this.state.email);
+    var fireBaseURL = new Firebase('https://unitprice.firebaseio.com/');
+    fireBaseURL.createUser({
+      email    : this.state.email,
+      password : this.state.password
+    }, function(error, userData) {
+      if (error) {
+        console.log("Error creating user:", error);
+      } else {
+        console.log("Successfully created user account with uid:", userData.uid);
+      }
+    });
+  },
+  render: function() {
+    return (
+      <div class="createAcct">
+        <h1>Create an Account</h1>
+        <form class="createAcctForm" onSubmit={this.handleSubmit} >
+          <p>
+            <input
+              type="text"
+              id="email"
+              placeholder="Email Address"
+              value={this.state.email}
+              onChange={this.handleEmailChange}
+              autofocus
+            />
+          </p>
+          <p>
+            <input
+              type="password"
+              id="pswrd"
+              placeholder="Password"
+              value={this.state.password}
+              onChange={this.handlePassChange}
+            />
+          </p>
+          <p>
+            <input
+              type="password"
+              id="pswrd"
+              placeholder="Confirm password"
+              value={this.state.password2}
+              onChange={this.handlePassChange2}
+            />
+          </p>
+          <p>
+            <input
+              type="text"
+              id="username"
+              placeholder="User Name"
+              value={this.state.username}
+              onChange={this.handleUserChange}
+            />
+          </p>
+          <p>
+            <input
+              type="submit"
+              id="createBtn"
+              value="Create Account"
+            />
+          </p>
+        </form>
+      </div>
+    )
+    
+  }
+});
+
 var MainMenu = React.createClass({
+  // TODO: add logout button and method
   render: function() {
     console.log(this.props.loggedInID);
     return (
@@ -122,51 +215,6 @@ var MainMenu = React.createClass({
           <h1>Main Menu</h1>
         </div>
     );
-  }
-});
-
-var CreateAcct = React.createClass({
-  // TODO: methods for handleSubmit, handleEmailChange, handlePassChange, handleUserChange
-  render: function() {
-    <div class="createAcct">
-        <h1>Create an Account</h1>
-      <form class="createAcctForm" onSubmit={this.handleSubmit} >
-        <p>
-          <input
-            type="text"
-            id="email"
-            placeholder="Email Address"
-            value={this.state.email}
-            onChange={this.handleEmailChange}
-            autofocus
-          />
-        </p>
-        <p>
-          <input
-            type="password"
-            id="pswrd"
-            placeholder="Password"
-            value={this.state.password}
-            onChange={this.handlePassChange}
-          />
-        <p>
-          <input
-            type="text"
-            id="username"
-            placeholder="User Name"
-            value={this.state.username}
-            onChange={this.handleUserChange}
-          />
-        </p>
-        <p>
-          <input
-            type="submit"
-            id="createBtn"
-            value="Create Account"
-          />
-        </p>
-      </form>
-    </div>
   }
 });
 
