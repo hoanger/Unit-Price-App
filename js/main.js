@@ -1,22 +1,30 @@
 var UnitPriceApp = React.createClass ({
+  getInitialState: function() {
+    return { isLoggedIn: '' };
+  },
   componentWillMount: function() {
     var fireBaseURL = new Firebase('https://unitprice.firebaseio.com/');
     var isLoggedIn = fireBaseURL.getAuth();
-    this.setState({ isLoggedIn: isLoggedIn })
+    this.setAuth(isLoggedIn);
+    fireBaseURL.onAuth(this.setAuth);
   },
-  render: function() {
-    var isLoggedIn = this.state.isLoggedIn;
-    if (isLoggedIn) {
-      console.log("User " + isLoggedIn.uid + " is logged in with " + isLoggedIn.provider);
-      return (
-        <MainMenu />
-      );
+  setAuth: function(authData) {
+    if (authState) {
+      var authState;
+      this.setState({ isLoggedIn: authData });
+      authState = this.state.isLoggedIn;
+      console.log("User " + authState.uid + " is logged in with " + authState.provider);
     } else {
       console.log("User is logged out");
-      return (
-        <LoginBox />
-      );
     };
+  },
+  render: function() {
+    var authState = this.state.isLoggedIn;
+    if (authState) {
+      return <MainMenu LoggedInID={ authState.uid } />;
+    } else {
+      return <LoginBox />
+    }
   }
 });
 
@@ -49,7 +57,7 @@ var LoginForm = React.createClass({
     if (userN === "user" && pass === "pass") {
         ReactDOM.unmountComponentAtNode(document.getElementById('content')); // Unmount loginbox
         ReactDOM.render(  // Load MainMenu
-          <MainMenu />,
+          <MainMenu loggedInID="userid-12345"/>,
           document.getElementById('content')
         );
     } else {
@@ -67,7 +75,7 @@ var LoginForm = React.createClass({
             placeholder="User Name"
             value={this.state.userName}
             onChange={this.handleUserChange}
-            required autofocus
+            autofocus
             />
         </p>
         <p>
@@ -77,12 +85,14 @@ var LoginForm = React.createClass({
             placeholder="Password"
             value={this.state.password}
             onChange={this.handlePassChange}
-            required/>
+            />
         </p>
           <input
             type="submit"
             id="loginBtn"
-            value="Login"/>
+            value="Login"
+            disabled={ (this.state.userName === '') || (this.state.password ==='') }
+            />
       </form>
         
     );
@@ -91,6 +101,7 @@ var LoginForm = React.createClass({
 
 var MainMenu = React.createClass({
   render: function() {
+    console.log(this.props.loggedInID);
     return (
         <div className="MainMenu">
             <h1>Main Menu</h1>
