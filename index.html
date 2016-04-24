@@ -13,6 +13,15 @@
         <link rel="stylesheet" href="css/normalize.css">
         <link rel="stylesheet" href="css/main.css">
         <script src="js/vendor/modernizr-2.8.3.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react-dom.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+        <script
+              src="https://code.jquery.com/jquery-2.2.3.min.js"
+              integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+              crossorigin="anonymous"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-2.2.3.min.js"><\/script>')</script>
+        <script src='https://cdn.firebase.com/js/client/2.4.2/firebase.js'></script>
     </head>
     <body>
         <!--[if lt IE 8]>
@@ -20,26 +29,9 @@
         <![endif]-->
 
         <!-- Add your site or application content here -->
-        <h1>Unit Price Login</h1>
-        <form role="form" id="login">
-            <p>
-                <label for="userName">Username</label>
-                <input type="text" id="userName" placeholder="User Name" required autofocus/>
-            </p>
-            <p>
-                <label for="pswrd">Password</label>
-                <input type="password" id="pswrd" placeholder="Password" required/>
-            </p>
-            <p>
-                <label></label>
-                <input type="button" id="loginBtn" value="Login" onClick="check()"/>
-            </p>
-        </form>
-
-        <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
-        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.12.0.min.js"><\/script>')</script>
+        <div id="content"></div>
         <script src="js/plugins.js"></script>
-        <script src="js/main.js"></script>
+        <script type="text/babel" src="js/main.js"></script>
 
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
         <script>
