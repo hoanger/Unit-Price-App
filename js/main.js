@@ -167,7 +167,7 @@ var CreateAcct = React.createClass({
           console.log("Error creating user:", error);
           self.setState({ error: { vis: true, msg: error }, password: '', password2: '' });
         } else {
-          self.createUser(); // record user info to table
+          self.createUser(userData.uid); // record user info to table
           console.log("Successfully created user account with uid:", userData.uid);
           console.log(userData);
           self.setState({
@@ -189,7 +189,15 @@ var CreateAcct = React.createClass({
       });
     }
   },
-  createUser: function() {
+  createUser: function(uid) {
+      var self = this;
+      var fireBaseURL = new Firebase('https://unitprice.firebaseio.com/');
+      var usersTable = fireBaseURL.child('users');
+      usersTable.child(uid).set({
+        username: self.state.username,
+        email: self.state.email,
+        date_created: Firebase.ServerValue.TIMESTAMP 
+      });
       return true;
   },
   // TODO: refactor this to be reusable to check for anything with a child path
