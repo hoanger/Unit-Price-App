@@ -31,7 +31,7 @@ var UnitPriceApp = React.createClass ({
 var LoginBox = React.createClass({
   render: function() {
     return (
-        <div class="loginBox">
+        <div className="loginBox">
             <h1>Unit Price Login</h1>
             <LoginForm />
         </div>
@@ -208,10 +208,10 @@ var CreateAcct = React.createClass({
   },
   render: function() {
     return (
-      <div class="createAcct">
+      <div className="createAcct">
         <h1>Create an Account</h1>
-        <div class="errorMsg" visible={ this.state.error.vis }>{ this.state.error.msg }</div>
-        <form class="createAcctForm" onSubmit={this.handleSubmit} >
+        <div className="errorMsg" visible={ this.state.error.vis }>{ this.state.error.msg }</div>
+        <form className="createAcctForm" onSubmit={this.handleSubmit} >
           <p>
             <input
               type="text"
@@ -268,7 +268,7 @@ var MainMenu = React.createClass({
   render: function() {
     console.log(this.props.loggedInID);
     return (
-        <div class="mainMenu">
+        <div className="mainMenu">
           <h1>Main Menu</h1>
         </div>
     );
