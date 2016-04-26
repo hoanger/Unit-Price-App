@@ -2,29 +2,37 @@ var UnitPriceApp = React.createClass ({
   getInitialState: function() {
     return { isLoggedIn: '' };
   },
-  componentWillMount: function() {
+  componentDidMount: function() {
+    console.log("componentDidMount");
     var fireBaseURL = new Firebase('https://unitprice.firebaseio.com/');
-    var isLoggedIn = fireBaseURL.getAuth();
-    this.setAuth(isLoggedIn);
     fireBaseURL.onAuth(this.setAuth);
   },
-  setAuth: function(authData) {
+  componentDidUpdate: function() {
+    console.log("componentDidUpdate");
+    var authState = this.state.isLoggedIn;
+    ReactDOM.unmountComponentAtNode(document.getElementById('appContainer'));
     if (authState) {
-      var authState;
-      this.setState({ isLoggedIn: authData });
-      authState = this.state.isLoggedIn;
-      console.log("User " + authState.uid + " is logged in with " + authState.provider);
+      ReactDOM.render(
+        <MainMenu loggedInID={ authState.uid } />,
+        document.getElementById('appContainer')
+      );
+    } else {
+      ReactDOM.render(
+        <LoginBox />,
+        document.getElementById('appContainer')
+      );
+    }
+  },
+  setAuth: function(authData) {
+    if (authData) {
+      console.log("User " + authData.uid + " is logged in with " + authData.provider);
     } else {
       console.log("User is logged out");
     }
+    this.setState({ isLoggedIn: authData });
   },
   render: function() {
-    var authState = this.state.isLoggedIn;
-    if (authState) {
-      return <MainMenu LoggedInID={ authState.uid } />;
-    } else {
-      return <LoginBox />;
-    }
+    return (<div id="appContainer" />);
   }
 });
 
@@ -50,28 +58,38 @@ var LoginForm = React.createClass({
     this.setState({ password: e.target.value });
   },
   handleSubmit: function(e) {
+    var self = this;
     e.preventDefault();
     var userN = this.state.loginName.trim();
     var pass = this.state.password;
-    if (userN === "user" && pass === "pass") {
-        ReactDOM.unmountComponentAtNode(document.getElementById('content')); // Unmount loginbox
+    var fireBaseURL = new Firebase('https://unitprice.firebaseio.com/');
+    fireBaseURL.authWithPassword({
+      email: userN,
+      password: pass
+    }, function(error, authData){
+      if (!error) {
+        console.log("Authenticated successfully with payload:", authData);
+        ReactDOM.unmountComponentAtNode(document.getElementById('appContainer')); // Unmount loginbox
         ReactDOM.render(  // Load MainMenu
-          <MainMenu loggedInID="userid-12345"/>,
-          document.getElementById('content')
+          <MainMenu loggedInID={ authData.uid }/>,
+          document.getElementById('appContainer')
         );
-    } else {
-        this.setState({loginName: '', password: ''});  // Clear state
-        alert("Error: Incorrect Password or Username");  // Error message
-    }
+      } else {
+          self.setState({loginName: '', password: ''});  // Clear state
+          console.log("Login Failed!", error);  // Error message
+      }
+    })
+
+    
   },
   handleCreateAcct: function(e) {
     e.preventDefault();
     console.log(e.type, ", ", e.target);
     // TODO: Load create user component
-    ReactDOM.unmountComponentAtNode(document.getElementById('content')); // Unmount loginbox
+    ReactDOM.unmountComponentAtNode(document.getElementById('appContainer')); // Unmount loginbox
     ReactDOM.render(  // Load Create Account page
       <CreateAcct />,
-      document.getElementById('content')
+      document.getElementById('appContainer')
     );
   },
   render: function() {
@@ -180,10 +198,10 @@ var CreateAcct = React.createClass({
               msg: ''
             }
           }); // clear form
-          ReactDOM.unmountComponentAtNode(document.getElementById('content')); // Unmount loginbox
+          ReactDOM.unmountComponentAtNode(document.getElementById('appContainer')); // Unmount loginbox
           ReactDOM.render(  // Load Login page
             <LoginBox />,
-            document.getElementById('content')
+            document.getElementById('appContainer')
           );
         }
       });
@@ -264,16 +282,22 @@ var CreateAcct = React.createClass({
 });
 
 var MainMenu = React.createClass({
-  // TODO: add logout button and method
+  logoutCurrentUser: function(e) {
+    e.preventDefault(e);
+    var fireBaseURL = new Firebase('https://unitprice.firebaseio.com/');
+    fireBaseURL.unauth();
+  },
   render: function() {
-    console.log(this.props.loggedInID);
     return (
         <div className="mainMenu">
           <h1>Main Menu</h1>
+          <a href='' onClick={ this.logoutCurrentUser }>Logout { this.props.loggedInID }</a>
         </div>
     );
   }
 });
+
+
 
 ReactDOM.render(
   <UnitPriceApp />,
