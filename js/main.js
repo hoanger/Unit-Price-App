@@ -87,8 +87,6 @@ var LoginForm = React.createClass({
   },
   handleCreateAcct: function(e) {
     e.preventDefault();
-    console.log(e.type, ", ", e.target);
-    // TODO: Load create user component
     ReactDOM.unmountComponentAtNode(document.getElementById('appContainer')); // Unmount loginbox
     ReactDOM.render(  // Load Create Account page
       <CreateAcct />,
@@ -234,7 +232,7 @@ var CreateAcct = React.createClass({
       <div className="createAcct">
         <h1>Create an Account</h1>
         <div className="errorMsg" visible={ this.state.error.vis }>{ this.state.error.msg }</div>
-        <form className="createAcctForm" onSubmit={this.handleSubmit} >
+        <form className="createAcctForm" onSubmit={this.handleSubmit}>
           <p>
             <input
               type="text"
@@ -282,25 +280,122 @@ var CreateAcct = React.createClass({
         </form>
       </div>
     )
-    
   }
 });
 
 var MainMenu = React.createClass({
-  logoutCurrentUser: function(e) {
-    e.preventDefault(e);
+  logoutCurrentUser: function(e, uid) {
+    e.preventDefault();
     let userRef = fireBaseURL.child('users');
       userRef.child(this.props.loggedInID).update({
         lastLoggedOut: Firebase.ServerValue.TIMESTAMP
       });
     fireBaseURL.unauth();
   },
+  changePass: function(e) {
+    e.preventDefault();
+    console.log(this.props.loggedInID);
+    ReactDOM.unmountComponentAtNode(document.getElementById('appContainer'));
+    ReactDOM.render(
+      <ChangePass uid={ this.props.loggedInID } />,
+      document.getElementById('appContainer')
+    );
+  },
   render: function() {
     return (
         <div className="mainMenu">
           <h1>Main Menu</h1>
-          <a href='' onClick={ this.logoutCurrentUser }>Logout { this.props.loggedInID }</a>
+          <ul>
+            <li><a href='' onClick={ this.changePass }>Change my password</a></li>
+            <li><a href='' onClick={ this.logoutCurrentUser }>Logout { this.props.loggedInID }</a></li>
+          </ul>
         </div>
+    );
+  }
+});
+
+var ChangePass = React.createClass({
+  getInitialState: function() {
+    return { oldPass: '', newPass: '', newPass2: '' };
+  },
+  handleOldPass: function(e) {
+    this.setState({ oldPass: e.target.value });
+  },
+  handlePassChange: function(e) {
+    this.setState({ newPass: e.target.value });
+  },
+  handlePass2Change: function(e) {
+    this.setState({ newPass2: e.target.value });
+  },
+  handleSubmit: function(e) {
+    e.preventDefault();
+    var self = this;
+    var emailRef = fireBaseURL.child('users').child(this.props.uid).child('email');
+    console.log(emailRef);
+    emailRef.once("value", function(snapshot) {
+      console.log(snapshot);
+      if (self.state.newPass != self.state.newPass2) {
+        console.log("New Passwords do not match!");
+      } else {
+        fireBaseURL.changePassword({
+          email       : snapshot.val(),
+          oldPassword : self.state.oldPass,
+          newPassword : self.state.newPass
+        }, function(error) {
+          if (error === null) {
+            console.log("Password changed successfully");
+            ReactDOM.unmountComponentAtNode(document.getElementById('appContainer')); // Unmount loginbox
+            ReactDOM.render(  // Load MainMenu
+              <MainMenu loggedInID={ self.props.uid }/>,
+              document.getElementById('appContainer')
+            );
+          } else {
+            console.log("Error changing password:", error);
+            self.setState({ oldPass: '', newPass: '', newPass2: '' });
+          }        
+        });
+      }
+    }); 
+  },
+  render: function() {
+    return (
+      <div id="changePassContainer">
+        <form className="changePassForm" onSubmit={this.handleSubmit} >
+          <p>
+            <input
+              type="password"
+              id="oldPswrd"
+              placeholder="Old Password"
+              value={this.state.oldPass}
+              onChange={this.handleOldPass}
+            />
+          </p>
+          <p>
+            <input
+              type="password"
+              id="newPswrd"
+              placeholder="New Password"
+              value={this.state.newPass}
+              onChange={this.handlePassChange}
+            />
+          </p>
+          <p>
+            <input
+              type="password"
+              id="oldPswrd"
+              placeholder="Retype new Password"
+              value={this.state.newPass2}
+              onChange={this.handlePass2Change}
+            />
+          </p>
+          <input
+              type="submit"
+              id="changePassBtn"
+              value="Change Password"
+              disabled={ (this.state.oldPass === '') || (this.state.newPass ==='') || (this.state.newPass2 ==='') }
+          />
+        </form>
+      </div> 
     );
   }
 });
