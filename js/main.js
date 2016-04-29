@@ -13,6 +13,10 @@ var UnitPriceApp = React.createClass ({
     var authState = this.state.isLoggedIn;
     ReactDOM.unmountComponentAtNode(document.getElementById('appContainer'));
     if (authState) {
+      let userRef = fireBaseURL.child('users');
+      userRef.child(authState.uid).update({
+        lastLoggedIn: Firebase.ServerValue.TIMESTAMP
+      });
       ReactDOM.render(
         <MainMenu loggedInID={ authState.uid } />,
         document.getElementById('appContainer')
@@ -285,6 +289,10 @@ var CreateAcct = React.createClass({
 var MainMenu = React.createClass({
   logoutCurrentUser: function(e) {
     e.preventDefault(e);
+    let userRef = fireBaseURL.child('users');
+      userRef.child(this.props.loggedInID).update({
+        lastLoggedOut: Firebase.ServerValue.TIMESTAMP
+      });
     fireBaseURL.unauth();
   },
   render: function() {
