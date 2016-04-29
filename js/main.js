@@ -1,14 +1,15 @@
+const fireBaseURL = new Firebase('https://unitprice.firebaseio.com/');
+
 var UnitPriceApp = React.createClass ({
   getInitialState: function() {
     return { isLoggedIn: '' };
   },
   componentDidMount: function() {
-    console.log("componentDidMount");
-    var fireBaseURL = new Firebase('https://unitprice.firebaseio.com/');
+    console.log("UnitPriceApp DidMount");
     fireBaseURL.onAuth(this.setAuth);
   },
   componentDidUpdate: function() {
-    console.log("componentDidUpdate");
+    console.log("UnitPriceApp DidUpdate");
     var authState = this.state.isLoggedIn;
     ReactDOM.unmountComponentAtNode(document.getElementById('appContainer'));
     if (authState) {
@@ -26,6 +27,7 @@ var UnitPriceApp = React.createClass ({
   setAuth: function(authData) {
     if (authData) {
       console.log("User " + authData.uid + " is logged in with " + authData.provider);
+
     } else {
       console.log("User is logged out");
     }
@@ -62,7 +64,6 @@ var LoginForm = React.createClass({
     e.preventDefault();
     var userN = this.state.loginName.trim();
     var pass = this.state.password;
-    var fireBaseURL = new Firebase('https://unitprice.firebaseio.com/');
     fireBaseURL.authWithPassword({
       email: userN,
       password: pass
@@ -163,7 +164,6 @@ var CreateAcct = React.createClass({
     var self = this;
     e.preventDefault();
     console.log("Attempting to create user account for ", this.state.email);
-    var fireBaseURL = new Firebase('https://unitprice.firebaseio.com/');
     var usersTable = fireBaseURL.child('users');
     /* Check if username is taken */    
     if ( this.checkUsernameExists(this.state.username, usersTable) ) {
@@ -211,7 +211,6 @@ var CreateAcct = React.createClass({
   },
   createUser: function(userData) {
       var self = this;
-      var fireBaseURL = new Firebase('https://unitprice.firebaseio.com/');
       var usersTable = fireBaseURL.child('users');
       usersTable.child(userData.uid).set({
         username: self.state.username,
@@ -286,7 +285,6 @@ var CreateAcct = React.createClass({
 var MainMenu = React.createClass({
   logoutCurrentUser: function(e) {
     e.preventDefault(e);
-    var fireBaseURL = new Firebase('https://unitprice.firebaseio.com/');
     fireBaseURL.unauth();
   },
   render: function() {
