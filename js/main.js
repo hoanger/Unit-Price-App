@@ -187,6 +187,12 @@ var CreateAcct = React.createClass({
             email    : self.state.email,
             password : self.state.password
           }, function() {
+            // TODO: handle auth errors
+            return;
+          });
+          /* record user info to user table */
+          self.createUser(userData);
+          /* clear form/state */
           self.setState({
             email: '',
             password: '',
@@ -196,15 +202,18 @@ var CreateAcct = React.createClass({
               vis: false,
               msg: ''
             }
+          });
+          console.log("Successfully created user account with uid:", userData.uid);
+          console.log(userData);
         }
       });
     }
   },
-  createUser: function(uid) {
+  createUser: function(userData) {
       var self = this;
       var fireBaseURL = new Firebase('https://unitprice.firebaseio.com/');
       var usersTable = fireBaseURL.child('users');
-      usersTable.child(uid).set({
+      usersTable.child(userData.uid).set({
         username: self.state.username,
         email: self.state.email,
         date_created: Firebase.ServerValue.TIMESTAMP 
@@ -264,6 +273,7 @@ var CreateAcct = React.createClass({
             <input
               type="submit"
               id="createBtn"
+              value="Create Account and Login"
             />
           </p>
         </form>
