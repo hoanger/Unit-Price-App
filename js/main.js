@@ -1,8 +1,11 @@
 const fireBaseURL = new Firebase('https://unitprice.firebaseio.com/');
 
 var UnitPriceApp = React.createClass ({
-  getInitialState: function() {
+/*getInitialState: function() {
     return { isLoggedIn: '' };
+  }, */
+  getDefautProps: function() {
+    return { isLoggedIn: null }
   },
   componentDidMount: function() {
     console.log("UnitPriceApp DidMount");
@@ -10,7 +13,7 @@ var UnitPriceApp = React.createClass ({
   },
   componentDidUpdate: function() {
     console.log("UnitPriceApp DidUpdate");
-    var authState = this.state.isLoggedIn;
+    var authState = this.props.isLoggedIn;
     ReactDOM.unmountComponentAtNode(document.getElementById('appContainer'));
     if (authState) {
       let userRef = fireBaseURL.child('users');
@@ -18,7 +21,7 @@ var UnitPriceApp = React.createClass ({
         lastLoggedIn: Firebase.ServerValue.TIMESTAMP
       });
       ReactDOM.render(
-        <MainMenu loggedInID={ authState.uid } />,
+        <MainMenu userAuth={ authState } />,
         document.getElementById('appContainer')
       );
     } else {
@@ -29,13 +32,15 @@ var UnitPriceApp = React.createClass ({
     }
   },
   setAuth: function(authData) {
+    ReactDOM.render(
+      <UnitPriceApp isLoggedIn={ authData } />,
+      document.getElementById('content')
+    );
     if (authData) {
       console.log("User " + authData.uid + " is logged in with " + authData.provider);
-
     } else {
       console.log("User is logged out");
     }
-    this.setState({ isLoggedIn: authData });
   },
   render: function() {
     return (<div id="appContainer" />);
@@ -76,7 +81,7 @@ var LoginForm = React.createClass({
         console.log("Authenticated successfully with payload:", authData);
         ReactDOM.unmountComponentAtNode(document.getElementById('appContainer')); // Unmount loginbox
         ReactDOM.render(  // Load MainMenu
-          <MainMenu loggedInID={ authData.uid }/>,
+          <MainMenu userAuth={ authData }/>,
           document.getElementById('appContainer')
         );
       } else {
@@ -287,17 +292,17 @@ var MainMenu = React.createClass({
   logoutCurrentUser: function(e, uid) {
     e.preventDefault();
     let userRef = fireBaseURL.child('users');
-      userRef.child(this.props.loggedInID).update({
+      userRef.child(this.props.userAuth.uid).update({
         lastLoggedOut: Firebase.ServerValue.TIMESTAMP
       });
     fireBaseURL.unauth();
   },
   changePass: function(e) {
     e.preventDefault();
-    console.log(this.props.loggedInID);
+    console.log(this.props.userAuth);
     ReactDOM.unmountComponentAtNode(document.getElementById('appContainer'));
     ReactDOM.render(
-      <ChangePass uid={ this.props.loggedInID } />,
+      <ChangePass userAuth={ this.props.userAuth } />,
       document.getElementById('appContainer')
     );
   },
@@ -307,7 +312,7 @@ var MainMenu = React.createClass({
           <h1>Main Menu</h1>
           <ul>
             <li><a href='' onClick={ this.changePass }>Change my password</a></li>
-            <li><a href='' onClick={ this.logoutCurrentUser }>Logout { this.props.loggedInID }</a></li>
+            <li><a href='' onClick={ this.logoutCurrentUser }>Logout { this.props.userAuth.uid }</a></li>
           </ul>
         </div>
     );
@@ -330,7 +335,7 @@ var ChangePass = React.createClass({
   handleSubmit: function(e) {
     e.preventDefault();
     var self = this;
-    var emailRef = fireBaseURL.child('users').child(this.props.uid).child('email');
+    var emailRef = fireBaseURL.child('users').child(this.props.userAuth.uid).child('email');
     console.log(emailRef);
     emailRef.once("value", function(snapshot) {
       console.log(snapshot);
@@ -346,7 +351,7 @@ var ChangePass = React.createClass({
             console.log("Password changed successfully");
             ReactDOM.unmountComponentAtNode(document.getElementById('appContainer')); // Unmount loginbox
             ReactDOM.render(  // Load MainMenu
-              <MainMenu loggedInID={ self.props.uid }/>,
+              <MainMenu userAuth={ self.props.userAuth }/>,
               document.getElementById('appContainer')
             );
           } else {
@@ -358,6 +363,7 @@ var ChangePass = React.createClass({
     }); 
   },
   render: function() {
+    // TODO: Add title and error div to the page
     return (
       <div id="changePassContainer">
         <form className="changePassForm" onSubmit={this.handleSubmit} >
