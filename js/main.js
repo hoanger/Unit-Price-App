@@ -1,20 +1,16 @@
 const fireBaseURL = new Firebase('https://unitprice.firebaseio.com/');
 
 var UnitPriceApp = React.createClass ({
-/*getInitialState: function() {
-    return { isLoggedIn: '' };
-  }, */
   getDefautProps: function() {
     return { isLoggedIn: null }
   },
   componentDidMount: function() {
-    console.log("UnitPriceApp DidMount");
+    //console.log("UnitPriceApp DidMount");
     fireBaseURL.onAuth(this.setAuth);
   },
   componentDidUpdate: function() {
-    console.log("UnitPriceApp DidUpdate");
+    //console.log("UnitPriceApp DidUpdate");
     var authState = this.props.isLoggedIn;
-    ReactDOM.unmountComponentAtNode(document.getElementById('appContainer'));
     if (authState) {
       let userRef = fireBaseURL.child('users');
       userRef.child(authState.uid).update({
@@ -79,7 +75,6 @@ var LoginForm = React.createClass({
     }, function(error, authData){
       if (!error) {
         console.log("Authenticated successfully with payload:", authData);
-        ReactDOM.unmountComponentAtNode(document.getElementById('appContainer')); // Unmount loginbox
         ReactDOM.render(  // Load MainMenu
           <MainMenu userAuth={ authData }/>,
           document.getElementById('appContainer')
@@ -92,7 +87,6 @@ var LoginForm = React.createClass({
   },
   handleCreateAcct: function(e) {
     e.preventDefault();
-    ReactDOM.unmountComponentAtNode(document.getElementById('appContainer')); // Unmount loginbox
     ReactDOM.render(  // Load Create Account page
       <CreateAcct />,
       document.getElementById('appContainer')
@@ -300,7 +294,6 @@ var MainMenu = React.createClass({
   changePass: function(e) {
     e.preventDefault();
     console.log(this.props.userAuth);
-    ReactDOM.unmountComponentAtNode(document.getElementById('appContainer'));
     ReactDOM.render(
       <ChangePass userAuth={ this.props.userAuth } />,
       document.getElementById('appContainer')
@@ -349,7 +342,6 @@ var ChangePass = React.createClass({
         }, function(error) {
           if (error === null) {
             console.log("Password changed successfully");
-            ReactDOM.unmountComponentAtNode(document.getElementById('appContainer')); // Unmount loginbox
             ReactDOM.render(  // Load MainMenu
               <MainMenu userAuth={ self.props.userAuth }/>,
               document.getElementById('appContainer')
