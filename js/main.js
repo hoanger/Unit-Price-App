@@ -46,8 +46,7 @@ var UnitPriceApp = React.createClass ({
 var LoginBox = React.createClass({
   render: function() {
     return (
-        <div className="loginBox">
-            <h1>Unit Price Login</h1>
+        <div id="loginBox">
             <LoginForm />
         </div>
     );
@@ -94,42 +93,39 @@ var LoginForm = React.createClass({
   },
   render: function() {
     return (
-      <div id="loginContainer">
-        <form className="loginForm" onSubmit={this.handleSubmit} >
-          <p>
-            <input
-              type="text"
-              id="loginName"
-              placeholder="Email Address"
-              value={this.state.loginName}
-              onChange={this.handleLoginChange}
-              autofocus
-            />
-          </p>
-          <p>
-            <input
-              type="password"
-              id="pswrd"
-              placeholder="Password"
-              value={this.state.password}
-              onChange={this.handlePassChange}
-            />
-          </p>
-            <input
-              type="submit"
-              id="loginBtn"
-              value="Sign In"
-              disabled={ (this.state.userName === '') || (this.state.password ==='') }
-            />
-        </form>
-        <hr />
-        <div id="createBtnContainer">
-          <input
-            type="button"
-            id="createAcct"
-            value="Create a New Account"
-            onClick={this.handleCreateAcct}
-          />
+      <div id="loginContainer" className="row">
+        <div className="medium-6 medium-centered large-4 large-centered columns">
+          
+          <form>
+            <div className="log-in-form">
+              <h4 className="text-center">Log in to UnitPrice</h4>
+              <label>Email
+                <input
+                  type="text"
+                  id="loginName"
+                  placeholder="email@someplace.com"
+                  value={this.state.loginName}
+                  onChange={this.handleLoginChange}
+                  autofocus
+                />
+              </label>
+              <label>Password
+                <input
+                  type="password"
+                  id="pswrd"
+                  placeholder="Shhh! It's a secret"
+                  value={this.state.password}
+                  onChange={this.handlePassChange}
+                />
+              </label>
+                <p><a onClick={this.handleSubmit} type="submit" className="button expanded">Log In</a></p>
+                
+              </div>
+            </form>
+            <hr />
+            <div id="createBtnContainer">
+              <a onClick={this.handleCreateAcct}  type="button" id="createAcctBtn" className="button expanded">Create a New Account</a>
+            </div>
         </div>
       </div> 
     );
