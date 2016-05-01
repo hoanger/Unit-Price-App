@@ -127,7 +127,7 @@ var LoginForm = React.createClass({
     e.preventDefault();
     ReactDOM.render(
       <CreateAcct />,
-      document.getElementById('appContainer')
+      document.getElementById('loginBox')
     );
   },
   render: function() {
@@ -290,6 +290,17 @@ var CreateAcct = React.createClass({
       return (snapshot.val() !== null);
     });
   },
+  /**
+  * @description Mount login form
+  * @param {object} e - onClick event object
+  */
+  backToLogin: function(e) {
+    e.preventDefault();
+    ReactDOM.render(
+      <LoginForm />,
+      document.getElementById('loginBox')
+    );
+  },
   render: function() {
     return (
       <div id="loginContainer" className="row">
@@ -335,6 +346,7 @@ var CreateAcct = React.createClass({
                   />
                 </label>
                 <p><a onClick={this.handleSubmit} type="submit" className="button expanded">Create Account and Login</a></p>
+                <p className="text-center"><a onClick={this.backToLogin}>Cancel</a></p>
             </div>
           </form>
         </div>
