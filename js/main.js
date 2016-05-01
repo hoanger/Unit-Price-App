@@ -51,6 +51,7 @@ var UnitPriceApp = React.createClass ({
   * @param authData {object} authData - Firebase user authentication info
   */
   setAuth: function(authData) {
+    ReactDOM.unmountComponentAtNode(document.getElementById('appContainer'));
     ReactDOM.render(
       <UnitPriceApp isLoggedIn={authData} />,
       document.getElementById('content')
