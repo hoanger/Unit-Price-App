@@ -4,10 +4,10 @@ const fireBaseURL = new Firebase('https://unitprice.firebaseio.com/');
 
 /*** React components ***/
 
-/**
+/********************************************
 * Component
 * @description Main app component
-*/
+*********************************************/
 
 var UnitPriceApp = React.createClass ({
   getDefaultProps: function() {
@@ -56,10 +56,11 @@ var UnitPriceApp = React.createClass ({
   }
 });
 
-/**
+/********************************************
 * Component
 * @description Container for authentication items when not logged in
-*/
+*********************************************/
+
 var LoginBox = React.createClass({
   render: function() {
     return (
@@ -168,10 +169,11 @@ var LoginForm = React.createClass({
   }
 });
 
-/**
+/********************************************
 * Component
 * @description Create new account component
-*/
+*********************************************/
+
 var CreateAcct = React.createClass({
   getInitialState: function() {
     return {
@@ -341,10 +343,11 @@ var CreateAcct = React.createClass({
   }
 });
 
-/**
+/********************************************
 * Component
 * @description Main app page component for logged in users
-*/
+*********************************************/
+
 var MainMenu = React.createClass({
   logoutCurrentUser: function(e, uid) {
     e.preventDefault();
@@ -379,10 +382,11 @@ var MainMenu = React.createClass({
   }
 });
 
-/**
+/********************************************
 * Component
 * @description Change password form component
-*/
+*********************************************/
+
 var ChangePass = React.createClass({
   getInitialState: function() {
     return { oldPass: '', newPass: '', newPass2: '' };
