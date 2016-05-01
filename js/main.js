@@ -220,11 +220,13 @@ var CreateAcct = React.createClass({
     var message;
     console.log("Attempting to create user account for ", this.state.email);
     /* Check if username is taken */
-    if ( this.checkUsernameExists(this.state.username, usersTable) ) {
+    if (this.checkUsernameExists(this.state.username, usersTable)) {
       message = 'Sorry, username: ' + this.state.username + 'is taken';
+      console.log(message);
     /* Check if passwords Match */
     } else if (this.state.password != this.state.password2) {
       message = 'Passwords do not match';
+      console.log(message);
     /* create user and authenticate in Firebase */
     } else {
       fireBaseURL.createUser({
@@ -234,6 +236,7 @@ var CreateAcct = React.createClass({
         if (error) {
           // TODO: handle create errors
           message = error;
+          console.log(message);
         } else {
           fireBaseURL.authWithPassword({
             email    : self.state.email,
@@ -251,11 +254,11 @@ var CreateAcct = React.createClass({
             username: ''
           });
           message = "Successfully created user account with uid: " + userData.uid;
+          console.log(message);
           console.log(userData);
         }
       });
     }
-    console.log(message);
   },
   /**
   * @description Create entry in user table
@@ -411,22 +414,27 @@ var ChangePass = React.createClass({
   handleSubmit: function(e) {
     e.preventDefault();
     var self = this;
+    var message;
     var emailRef = fireBaseURL.child('users').child(this.props.userAuth.uid).child('email');
     console.log(emailRef);
     emailRef.once("value", function(snapshot) {
       console.log(snapshot);
       if (self.state.newPass != self.state.newPass2) {
-        console.log("New Passwords do not match!");
+        message = "New Passwords do not match!";
+        console.log(message);
       } else {
         fireBaseURL.changePassword({
           email       : snapshot.val(),
           oldPassword : self.state.oldPass,
           newPassword : self.state.newPass
         }, function(error) {
-          if (error === null) {
-            console.log("Password changed successfully");
+          if (error) {
+            message = "Error changing password.";
+            console.log(message);
+            console.log(error);
           } else {
-            console.log("Error changing password:", error);
+            message = "Password changed successfully";
+            console.log(message);
           }
         });
       }
