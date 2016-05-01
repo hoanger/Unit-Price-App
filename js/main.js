@@ -1,23 +1,32 @@
+/*** Global variables and constants ***/
+
 const fireBaseURL = new Firebase('https://unitprice.firebaseio.com/');
 
+/*** React components ***/
+
+/**
+* Component
+* @description Main app component
+*/
+
 var UnitPriceApp = React.createClass ({
-  getDefautProps: function() {
-    return { isLoggedIn: null }
+  getDefaultProps: function() {
+    return {isLoggedIn: null}
   },
   componentDidMount: function() {
     //console.log("UnitPriceApp DidMount");
+    /* Listen for Firebase authentication state changes and pass data through callback */
     fireBaseURL.onAuth(this.setAuth);
   },
   componentDidUpdate: function() {
     //console.log("UnitPriceApp DidUpdate");
     var authState = this.props.isLoggedIn;
+    /* Record login time and log into main page if authenticated, show login screen otherwise */
     if (authState) {
       let userRef = fireBaseURL.child('users');
-      userRef.child(authState.uid).update({
-        lastLoggedIn: Firebase.ServerValue.TIMESTAMP
-      });
+      userRef.child(authState.uid).update({lastLoggedIn: Firebase.ServerValue.TIMESTAMP});
       ReactDOM.render(
-        <MainMenu userAuth={ authState } />,
+        <MainMenu userAuth={authState} />,
         document.getElementById('appContainer')
       );
     } else {
@@ -27,6 +36,10 @@ var UnitPriceApp = React.createClass ({
       );
     }
   },
+  /**
+  * @description Callback to update props with
+  * @param authData {object} authData - Firebase user authentication info
+  */
   setAuth: function(authData) {
     ReactDOM.render(
       <UnitPriceApp isLoggedIn={ authData } />,
@@ -43,6 +56,10 @@ var UnitPriceApp = React.createClass ({
   }
 });
 
+/**
+* Component
+* @description Container for authentication items when not logged in
+*/
 var LoginBox = React.createClass({
   render: function() {
     return (
@@ -53,19 +70,35 @@ var LoginBox = React.createClass({
   }
 });
 
+/**
+* Component
+* @description Login form component
+*/
 var LoginForm = React.createClass({
   getInitialState: function() {
-    return { loginName: '', password: '' };
+    return {loginName: '', password: ''};
   },
+  /**
+  * @description Synchronize form field with state
+  * @param {object} e - onChange event object
+  */
   handleLoginChange: function(e) {
-    this.setState({ loginName: e.target.value });
+    this.setState({loginName: e.target.value});
   },
+  /**
+  * @description Synchronize form field with state
+  * @param {object} e - onChange event object
+  */
   handlePassChange: function(e) {
-    this.setState({ password: e.target.value });
+    this.setState({password: e.target.value});
   },
+  /**
+  * @description Attempt to authenticate with email and password
+  * @param {object} e - onClick event object
+  */
   handleSubmit: function(e) {
-    var self = this;
     e.preventDefault();
+    var self = this;
     var userN = this.state.loginName.trim();
     var pass = this.state.password;
     fireBaseURL.authWithPassword({
@@ -74,19 +107,24 @@ var LoginForm = React.createClass({
     }, function(error, authData){
       if (!error) {
         console.log("Authenticated successfully with payload:", authData);
-        ReactDOM.render(  // Load MainMenu
+        /* Load app when authenticated */
+        ReactDOM.render(
           <MainMenu userAuth={ authData }/>,
           document.getElementById('appContainer')
         );
       } else {
-          self.setState({loginName: '', password: ''});  // Clear state
-          console.log("Login Failed!", error);  // Error message
+          self.setState({loginName: '', password: ''});
+          console.log("Login Failed!", error);
       }
     })
   },
+  /**
+  * @description Mount Create Account component when button clicked
+  * @param {object} e - onClick event object
+  */
   handleCreateAcct: function(e) {
     e.preventDefault();
-    ReactDOM.render(  // Load Create Account page
+    ReactDOM.render(
       <CreateAcct />,
       document.getElementById('appContainer')
     );
@@ -95,7 +133,6 @@ var LoginForm = React.createClass({
     return (
       <div id="loginContainer" className="row">
         <div className="medium-6 medium-centered large-4 large-centered columns">
-          
           <form>
             <div className="user-form">
               <h4 className="text-center">Log in to UnitPrice</h4>
@@ -119,7 +156,6 @@ var LoginForm = React.createClass({
                 />
               </label>
                 <p><a onClick={this.handleSubmit} type="submit" className="button expanded">Log In</a></p>
-                
               </div>
             </form>
             <hr />
@@ -127,11 +163,15 @@ var LoginForm = React.createClass({
               <p><a onClick={this.handleCreateAcct}  type="button" id="createAcctBtn" className="button expanded">Create a New Account</a></p>
             </div>
         </div>
-      </div> 
+      </div>
     );
   }
 });
 
+/**
+* Component
+* @description Create new account component
+*/
 var CreateAcct = React.createClass({
   getInitialState: function() {
     return {
@@ -141,40 +181,60 @@ var CreateAcct = React.createClass({
       username: ''
     };
   },
+  /**
+  * @description Synchronize form field with state
+  * @param {object} e - onChange event object
+  */
   handleEmailChange: function(e) {
-    this.setState({ email: e.target.value, error: { vis: false } });
+    this.setState({email: e.target.value});
   },
+  /**
+  * @description Synchronize form field with state
+  * @param {object} e - onChange event object
+  */
   handlePassChange: function(e) {
-    this.setState({ password: e.target.value, error: { vis: false } });
+    this.setState({password: e.target.value});
   },
+  /**
+  * @description Synchronize form field with state
+  * @param {object} e - onChange event object
+  */
   handlePassChange2: function(e) {
-    this.setState({ password2: e.target.value, error: { vis: false } });
+    this.setState({password2: e.target.value});
   },
+  /**
+  * @description Synchronize form field with state
+  * @param {object} e - onChange event object
+  */
   handleUserChange: function(e) {
-    this.setState({ username: e.target.value, error: { vis: false } });
+    this.setState({username: e.target.value});
   },
+  /**
+  * @description Attempt to create user with current state
+  * @param {object} e - onClick event object
+  */
   handleSubmit: function(e) {
-    var self = this;
     e.preventDefault();
-    console.log("Attempting to create user account for ", this.state.email);
+    var self = this;
     var usersTable = fireBaseURL.child('users');
-    /* Check if username is taken */    
+    var message;
+    console.log("Attempting to create user account for ", this.state.email);
+    /* Check if username is taken */
     if ( this.checkUsernameExists(this.state.username, usersTable) ) {
-      var message = 'Sorry, username: ' + this.state.username + 'is taken';
-      console.log(message);
+      message = 'Sorry, username: ' + this.state.username + 'is taken';
     /* Check if passwords Match */
     } else if (this.state.password != this.state.password2) {
-      console.log('Passwords do not match');
+      message = 'Passwords do not match';
+    /* create user and authenticate in Firebase */
     } else {
-      /* create user in Firebase */
       fireBaseURL.createUser({
         email    : this.state.email,
         password : this.state.password
       }, function(error, userData) {
         if (error) {
-          console.log(error);
+          // TODO: handle create errors
+          message = error;
         } else {
-          /* login with password */
           fireBaseURL.authWithPassword({
             email    : self.state.email,
             password : self.state.password
@@ -184,29 +244,41 @@ var CreateAcct = React.createClass({
           });
           /* record user info to user table */
           self.createUser(userData);
-          /* clear form/state */
           self.setState({
             email: '',
             password: '',
             password2: '',
             username: ''
           });
-          console.log("Successfully created user account with uid:", userData.uid);
+          message = "Successfully created user account with uid: " + userData.uid;
           console.log(userData);
         }
       });
     }
+    console.log(message);
   },
+  /**
+  * @description Create entry in user table
+  * @param {object} userData - contains Firebase user ID and email address
+  * @returns {boolean}
+  */
+  // TODO: Refactor Firebase createUser into this function instead
   createUser: function(userData) {
       var self = this;
       var usersTable = fireBaseURL.child('users');
       usersTable.child(userData.uid).set({
         username: self.state.username,
         email: self.state.email,
-        date_created: Firebase.ServerValue.TIMESTAMP 
+        date_created: Firebase.ServerValue.TIMESTAMP
       });
       return true;
   },
+  /**
+  * @description Check user table if user name is taken
+  * @param {string} username - user name
+  * @param {Firebase} usersTable - Firebase ref for the user table
+  * @returns {boolean} - true if match is found, false if otherwise
+  */
   // TODO: refactor this to be reusable to check for anything with a child path
   checkUsernameExists: function (username, usersTable) {
     usersTable.orderByChild("username").equalTo(username).once("value", function(snapshot) {
@@ -221,7 +293,7 @@ var CreateAcct = React.createClass({
             <div className="user-form">
               <h4 className="text-center">Create your Account</h4>
                 <label>Choose a Username
-                  <input 
+                  <input
                     type="text"
                     id="username"
                     autoFocus
@@ -266,6 +338,10 @@ var CreateAcct = React.createClass({
   }
 });
 
+/**
+* Component
+* @description Main app page component for logged in users
+*/
 var MainMenu = React.createClass({
   logoutCurrentUser: function(e, uid) {
     e.preventDefault();
@@ -279,7 +355,7 @@ var MainMenu = React.createClass({
     e.preventDefault();
     console.log(this.props.userAuth);
     ReactDOM.render(
-      <ChangePass userAuth={ this.props.userAuth } />,
+      <ChangePass userAuth={this.props.userAuth} />,
       document.getElementById('page-holder')
     );
   },
@@ -289,10 +365,10 @@ var MainMenu = React.createClass({
         <div className="medium-6 medium-centered large-4 large-centered columns">
           <h2>Main Menu</h2>
           <ul>
-            <li><a href='' onClick={ this.changePass }>Change my password</a></li>
-            <li><a href='' onClick={ this.logoutCurrentUser }>Logout { this.props.userAuth.uid }</a></li>
-            <hr />
+            <li><a href='' onClick={this.changePass}>Change my password</a></li>
+            <li><a href='' onClick={this.logoutCurrentUser}>Logout {this.props.userAuth.uid}</a></li>
           </ul>
+          <hr />
           <div id="page-holder" />
         </div>
       </div>
@@ -300,19 +376,38 @@ var MainMenu = React.createClass({
   }
 });
 
+/**
+* Component
+* @description Change password form component
+*/
 var ChangePass = React.createClass({
   getInitialState: function() {
     return { oldPass: '', newPass: '', newPass2: '' };
   },
+  /**
+  * @description Synchronize form field with state
+  * @param {object} e - onChange event object
+  */
   handleOldPass: function(e) {
     this.setState({ oldPass: e.target.value });
   },
+  /**
+  * @description Synchronize form field with state
+  * @param {object} e - onChange event object
+  */
   handlePassChange: function(e) {
     this.setState({ newPass: e.target.value });
   },
+  /**
+  * @description Synchronize form field with state
+  * @param {object} e - onChange event object
+  */
   handlePass2Change: function(e) {
     this.setState({ newPass2: e.target.value });
-  },
+  },/**
+  * @description Attempt to change/update password
+  * @param {object} e - onClick event object
+  */
   handleSubmit: function(e) {
     e.preventDefault();
     var self = this;
@@ -336,14 +431,12 @@ var ChangePass = React.createClass({
         });
       }
     self.setState({ oldPass: '', newPass: '', newPass2: '' });
-    }); 
+    });
   },
   render: function() {
-    // TODO: Add title and error div to the page
     return (
       <div id="changePassContainer" className="row">
         <div className="small-12 columns">
-          
           <form>
             <div className="user-form">
               <h4 className="text-center">Change your password</h4>
@@ -378,7 +471,7 @@ var ChangePass = React.createClass({
             </div>
           </form>
         </div>
-      </div> 
+      </div>
     );
   }
 });
