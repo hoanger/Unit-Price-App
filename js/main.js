@@ -97,16 +97,16 @@ var LoginForm = React.createClass({
         <div className="medium-6 medium-centered large-4 large-centered columns">
           
           <form>
-            <div className="log-in-form">
+            <div className="user-form">
               <h4 className="text-center">Log in to UnitPrice</h4>
               <label>Email
                 <input
-                  type="text"
+                  type="email"
                   id="loginName"
+                  autoFocus
                   placeholder="email@someplace.com"
                   value={this.state.loginName}
                   onChange={this.handleLoginChange}
-                  autofocus
                 />
               </label>
               <label>Password
@@ -124,7 +124,7 @@ var LoginForm = React.createClass({
             </form>
             <hr />
             <div id="createBtnContainer">
-              <a onClick={this.handleCreateAcct}  type="button" id="createAcctBtn" className="button expanded">Create a New Account</a>
+              <p><a onClick={this.handleCreateAcct}  type="button" id="createAcctBtn" className="button expanded">Create a New Account</a></p>
             </div>
         </div>
       </div> 
@@ -138,11 +138,7 @@ var CreateAcct = React.createClass({
       email: '',
       password: '',
       password2: '',
-      username: '',
-      error: {
-        vis: false,
-        msg: ''
-      }
+      username: ''
     };
   },
   handleEmailChange: function(e) {
@@ -165,10 +161,10 @@ var CreateAcct = React.createClass({
     /* Check if username is taken */    
     if ( this.checkUsernameExists(this.state.username, usersTable) ) {
       var message = 'Sorry, username: ' + this.state.username + 'is taken';
-      this.setState({ error: { vis: true, msg: message } });
+      console.log(message);
     /* Check if passwords Match */
     } else if (this.state.password != this.state.password2) {
-      this.setState({ error: { vis: true, msg: 'Passwords do not match' } });
+      console.log('Passwords do not match');
     } else {
       /* create user in Firebase */
       fireBaseURL.createUser({
@@ -176,8 +172,7 @@ var CreateAcct = React.createClass({
         password : this.state.password
       }, function(error, userData) {
         if (error) {
-          console.log("Error creating user:", error);
-          self.setState({ error: { vis: true, msg: error }, password: '', password2: '' });
+          console.log(error);
         } else {
           /* login with password */
           fireBaseURL.authWithPassword({
@@ -194,11 +189,7 @@ var CreateAcct = React.createClass({
             email: '',
             password: '',
             password2: '',
-            username: '',
-            error: {
-              vis: false,
-              msg: ''
-            }
+            username: ''
           });
           console.log("Successfully created user account with uid:", userData.uid);
           console.log(userData);
@@ -224,55 +215,52 @@ var CreateAcct = React.createClass({
   },
   render: function() {
     return (
-      <div className="createAcct">
-        <h1>Create an Account</h1>
-        <div className="errorMsg" visible={ this.state.error.vis }>{ this.state.error.msg }</div>
-        <form className="createAcctForm" onSubmit={this.handleSubmit}>
-          <p>
-            <input
-              type="text"
-              id="email"
-              placeholder="Email Address"
-              value={this.state.email}
-              onChange={this.handleEmailChange}
-              autofocus
-            />
-          </p>
-          <p>
-            <input
-              type="password"
-              id="pswrd"
-              placeholder="Password"
-              value={this.state.password}
-              onChange={this.handlePassChange}
-            />
-          </p>
-          <p>
-            <input
-              type="password"
-              id="pswrd"
-              placeholder="Confirm password"
-              value={this.state.password2}
-              onChange={this.handlePassChange2}
-            />
-          </p>
-          <p>
-            <input
-              type="text"
-              id="username"
-              placeholder="User Name"
-              value={this.state.username}
-              onChange={this.handleUserChange}
-            />
-          </p>
-          <p>
-            <input
-              type="submit"
-              id="createBtn"
-              value="Create Account and Login"
-            />
-          </p>
-        </form>
+      <div id="loginContainer" className="row">
+        <div className="medium-6 medium-centered large-4 large-centered columns">
+          <form>
+            <div className="user-form">
+              <h4 className="text-center">Create your Account</h4>
+                <label>Choose a Username
+                  <input 
+                    type="text"
+                    id="username"
+                    autoFocus
+                    placeholder="Kickass code name"
+                    value={this.state.username}
+                    onChange={this.handleUserChange}
+                  />
+                </label>
+                <label>Email
+                  <input
+                    type="email"
+                    id="email"
+                    placeholder="email@someplace.com"
+                    value={this.state.email}
+                    onChange={this.handleEmailChange}
+                  />
+                </label>
+                <label>Password
+                  <input
+                    type="password"
+                    id="pswrd"
+                    placeholder="Make it hard to guess"
+                    value={this.state.password}
+                    onChange={this.handlePassChange}
+                  />
+                </label>
+                <label>Confirm Password
+                  <input
+                    type="password"
+                    id="pswrd"
+                    placeholder="but you still need to remember it"
+                    value={this.state.password2}
+                    onChange={this.handlePassChange2}
+                  />
+                </label>
+                <p><a onClick={this.handleSubmit} type="submit" className="button expanded">Create Account and Login</a></p>
+            </div>
+          </form>
+        </div>
       </div>
     )
   }
@@ -353,42 +341,42 @@ var ChangePass = React.createClass({
   render: function() {
     // TODO: Add title and error div to the page
     return (
-      <div id="changePassContainer">
-        <form className="changePassForm" onSubmit={this.handleSubmit} >
-          <p>
-            <input
-              type="password"
-              id="oldPswrd"
-              placeholder="Old Password"
-              value={this.state.oldPass}
-              onChange={this.handleOldPass}
-            />
-          </p>
-          <p>
-            <input
-              type="password"
-              id="newPswrd"
-              placeholder="New Password"
-              value={this.state.newPass}
-              onChange={this.handlePassChange}
-            />
-          </p>
-          <p>
-            <input
-              type="password"
-              id="oldPswrd"
-              placeholder="Retype new Password"
-              value={this.state.newPass2}
-              onChange={this.handlePass2Change}
-            />
-          </p>
-          <input
-              type="submit"
-              id="changePassBtn"
-              value="Change Password"
-              disabled={ (this.state.oldPass === '') || (this.state.newPass ==='') || (this.state.newPass2 ==='') }
-          />
-        </form>
+      <div id="changePassContainer" className="row">
+        <div className="medium-6 medium-centered large-4 large-centered columns">
+          
+          <form>
+            <div className="user-form">
+              <h4 className="text-center">Change your password</h4>
+              <label>Old password
+                <input
+                  type="password"
+                  id="oldPswrd"
+                  autoFocus
+                  value={this.state.oldPass}
+                  onChange={this.handleOldPass}
+                  />
+              </label>
+              <label>New Password
+                <input
+                type="password"
+                id="newPswrd"
+                value={this.state.newPass}
+                onChange={this.handlePassChange}
+              />
+              </label>
+              <label>Confirm New Password
+                <input
+                  type="password"
+                  id="oldPswrd"
+                  placeholder="Retype new Password"
+                  value={this.state.newPass2}
+                  onChange={this.handlePass2Change}
+                />
+              </label>
+              <p><a onClick={this.handleSubmit} type="submit" className="button expanded">Change Password</a></p>
+            </div>
+          </form>
+        </div>
       </div> 
     );
   }

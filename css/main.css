@@ -1,4 +1,4 @@
-#loginContainer {
+#loginContainer, #changePassContainer {
   padding-top: 1rem;
 }
 
@@ -10,7 +10,7 @@
 	background-color: #3f647b;
 }
 
-.log-in-form {
+.user-form {
   border: 1px solid #cacaca;
   padding: 1rem;
   border-radius: 3px; }
