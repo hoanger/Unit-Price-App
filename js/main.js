@@ -280,18 +280,22 @@ var MainMenu = React.createClass({
     console.log(this.props.userAuth);
     ReactDOM.render(
       <ChangePass userAuth={ this.props.userAuth } />,
-      document.getElementById('appContainer')
+      document.getElementById('page-holder')
     );
   },
   render: function() {
     return (
-        <div className="mainMenu">
-          <h1>Main Menu</h1>
+      <div className="mainMenu row">
+        <div className="medium-6 medium-centered large-4 large-centered columns">
+          <h2>Main Menu</h2>
           <ul>
             <li><a href='' onClick={ this.changePass }>Change my password</a></li>
             <li><a href='' onClick={ this.logoutCurrentUser }>Logout { this.props.userAuth.uid }</a></li>
+            <hr />
           </ul>
+          <div id="page-holder" />
         </div>
+      </div>
     );
   }
 });
@@ -326,23 +330,19 @@ var ChangePass = React.createClass({
         }, function(error) {
           if (error === null) {
             console.log("Password changed successfully");
-            ReactDOM.render(  // Load MainMenu
-              <MainMenu userAuth={ self.props.userAuth }/>,
-              document.getElementById('appContainer')
-            );
           } else {
             console.log("Error changing password:", error);
-            self.setState({ oldPass: '', newPass: '', newPass2: '' });
-          }        
+          }
         });
       }
+    self.setState({ oldPass: '', newPass: '', newPass2: '' });
     }); 
   },
   render: function() {
     // TODO: Add title and error div to the page
     return (
       <div id="changePassContainer" className="row">
-        <div className="medium-6 medium-centered large-4 large-centered columns">
+        <div className="small-12 columns">
           
           <form>
             <div className="user-form">
@@ -360,15 +360,16 @@ var ChangePass = React.createClass({
                 <input
                 type="password"
                 id="newPswrd"
+                placeholder="Enter your new password"
                 value={this.state.newPass}
                 onChange={this.handlePassChange}
               />
               </label>
-              <label>Confirm New Password
+              <label>
                 <input
                   type="password"
                   id="oldPswrd"
-                  placeholder="Retype new Password"
+                  placeholder="Confirm new password"
                   value={this.state.newPass2}
                   onChange={this.handlePass2Change}
                 />
