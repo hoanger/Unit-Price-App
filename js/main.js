@@ -52,7 +52,13 @@ var UnitPriceApp = React.createClass ({
     }
   },
   render: function() {
-    return (<div id="appContainer" />);
+    return (
+      <div id="loginContainer" className="row">
+        <div className="medium-6 medium-centered large-4 large-centered columns">
+          <div id="appContainer" />
+        </div>
+      </div>
+      );
   }
 });
 
@@ -62,12 +68,45 @@ var UnitPriceApp = React.createClass ({
 *********************************************/
 
 var LoginBox = React.createClass({
+  getInitialState: function() {
+    return {newAcct: false}
+  },
+  /**
+  * @description Set state to render create account form
+  * @param {object} e - onClick event object
+  */
+  handleCreateAcct: function(e) {
+    e.preventDefault();
+    this.setState({newAcct: true});
+  },
+  /**
+  * @description Set state to render login form
+  * @param {object} e - onClick event object
+  */
+  backToLogin: function(e) {
+    e.preventDefault();
+    this.setState({newAcct: false});
+  },
   render: function() {
-    return (
-        <div id="loginBox">
-            <LoginForm />
+    var JSXitem;
+    if (this.state.newAcct) {
+      JSXitem = (
+        <div>
+          <CreateAcct />
+          <p className="text-center nav-a"><a onClick={this.backToLogin}>Cancel</a></p>
         </div>
-    );
+      )
+    } else {
+      JSXitem = (
+        <div>
+          <LoginForm />
+          <div id="createBtnContainer">
+            <p><a onClick={this.handleCreateAcct}  type="button" id="createAcctBtn" className="button expanded">Create a New Account</a></p>
+          </div>
+        </div>
+      )
+    }
+    return JSXitem;
   }
 });
 
@@ -119,52 +158,33 @@ var LoginForm = React.createClass({
       }
     })
   },
-  /**
-  * @description Mount Create Account component when button clicked
-  * @param {object} e - onClick event object
-  */
-  handleCreateAcct: function(e) {
-    e.preventDefault();
-    ReactDOM.render(
-      <CreateAcct />,
-      document.getElementById('loginBox')
-    );
-  },
   render: function() {
     return (
-      <div id="loginContainer" className="row">
-        <div className="medium-6 medium-centered large-4 large-centered columns">
-          <form>
-            <div className="user-form">
-              <h4 className="text-center">Log in to UnitPrice</h4>
-              <label>Email
-                <input
-                  type="email"
-                  id="loginName"
-                  autoFocus
-                  placeholder="email@someplace.com"
-                  value={this.state.loginName}
-                  onChange={this.handleLoginChange}
-                />
-              </label>
-              <label>Password
-                <input
-                  type="password"
-                  id="pswrd"
-                  placeholder="Shhh! It's a secret"
-                  value={this.state.password}
-                  onChange={this.handlePassChange}
-                />
-              </label>
-                <p><a onClick={this.handleSubmit} type="submit" className="button expanded">Log In</a></p>
-              </div>
-            </form>
-            <hr />
-            <div id="createBtnContainer">
-              <p><a onClick={this.handleCreateAcct}  type="button" id="createAcctBtn" className="button expanded">Create a New Account</a></p>
-            </div>
-        </div>
-      </div>
+      <form>
+        <div className="user-form">
+          <h4 className="text-center">Log in to UnitPrice</h4>
+          <label>Email
+            <input
+              type="email"
+              id="loginName"
+              autoFocus
+              placeholder="email@someplace.com"
+              value={this.state.loginName}
+              onChange={this.handleLoginChange}
+            />
+          </label>
+          <label>Password
+            <input
+              type="password"
+              id="pswrd"
+              placeholder="Shhh! It's a secret"
+              value={this.state.password}
+              onChange={this.handlePassChange}
+            />
+          </label>
+            <p><a onClick={this.handleSubmit} type="submit" className="button expanded">Log In</a></p>
+          </div>
+        </form>
     );
   }
 });
@@ -290,67 +310,51 @@ var CreateAcct = React.createClass({
       return (snapshot.val() !== null);
     });
   },
-  /**
-  * @description Mount login form
-  * @param {object} e - onClick event object
-  */
-  backToLogin: function(e) {
-    e.preventDefault();
-    ReactDOM.render(
-      <LoginForm />,
-      document.getElementById('loginBox')
-    );
-  },
   render: function() {
     return (
-      <div id="loginContainer" className="row">
-        <div className="medium-6 medium-centered large-4 large-centered columns">
-          <form>
-            <div className="user-form">
-              <h4 className="text-center">Create your Account</h4>
-                <label>Choose a Username
-                  <input
-                    type="text"
-                    id="username"
-                    autoFocus
-                    placeholder="Kickass code name"
-                    value={this.state.username}
-                    onChange={this.handleUserChange}
-                  />
-                </label>
-                <label>Email
-                  <input
-                    type="email"
-                    id="email"
-                    placeholder="email@someplace.com"
-                    value={this.state.email}
-                    onChange={this.handleEmailChange}
-                  />
-                </label>
-                <label>Password
-                  <input
-                    type="password"
-                    id="pswrd"
-                    placeholder="Make it hard to guess"
-                    value={this.state.password}
-                    onChange={this.handlePassChange}
-                  />
-                </label>
-                <label>Confirm Password
-                  <input
-                    type="password"
-                    id="pswrd"
-                    placeholder="but you still need to remember it"
-                    value={this.state.password2}
-                    onChange={this.handlePassChange2}
-                  />
-                </label>
-                <p><a onClick={this.handleSubmit} type="submit" className="button expanded">Create Account and Login</a></p>
-                <p className="text-center"><a onClick={this.backToLogin}>Cancel</a></p>
-            </div>
-          </form>
+      <form>
+        <div className="user-form">
+          <h4 className="text-center">Create your Account</h4>
+            <label>Choose a Username
+              <input
+                type="text"
+                id="username"
+                autoFocus
+                placeholder="Kickass code name"
+                value={this.state.username}
+                onChange={this.handleUserChange}
+              />
+            </label>
+            <label>Email
+              <input
+                type="email"
+                id="email"
+                placeholder="email@someplace.com"
+                value={this.state.email}
+                onChange={this.handleEmailChange}
+              />
+            </label>
+            <label>Password
+              <input
+                type="password"
+                id="pswrd"
+                placeholder="Make it hard to guess"
+                value={this.state.password}
+                onChange={this.handlePassChange}
+              />
+            </label>
+            <label>Confirm Password
+              <input
+                type="password"
+                id="pswrd"
+                placeholder="but you still need to remember it"
+                value={this.state.password2}
+                onChange={this.handlePassChange2}
+              />
+            </label>
+            <p><a onClick={this.handleSubmit} type="submit" className="button expanded">Create Account and Login</a></p>
         </div>
-      </div>
+      </form>
     )
   }
 });
