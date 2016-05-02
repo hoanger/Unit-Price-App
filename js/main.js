@@ -394,91 +394,16 @@ var MainMenu = React.createClass({
   render: function() {
     return (
       <div>
-        <div className="off-canvas-wrapper">
-          <div className="off-canvas-wrapper-inner" data-off-canvas-wrapper>
-
-            {/*<!-- off-canvas title bar for 'small' screen -->*/}
-            <div className="title-bar" data-responsive-toggle="widemenu" data-hide-for="medium">
-              <div className="title-bar-left">
-                <button className="menu-icon" type="button" data-open="offCanvasLeft"></button>
-                <span className="title-bar-title">Foundation</span>
-              </div>
-              <div className="title-bar-right">
-                <span className="title-bar-title">Login</span>
-                <button className="menu-icon" type="button" data-open="offCanvasRight"></button>
-              </div>
-            </div>
-
-            {/*<!-- off-canvas left menu -->*/}
-            <div className="off-canvas position-left" id="offCanvasLeft" data-off-canvas>
-              <ul className="vertical dropdown menu" data-dropdown-menu>
-                <li><a href="left_item_1">Left item 1</a></li>
-                <li><a href="left_item_2">Left item 2</a></li>
-                <li><a href="left_item_3">Left item 3</a></li>
-              </ul>
-            </div>
-
-            {/*<!-- off-canvas right menu -->*/}
-            <div className="off-canvas position-right" id="offCanvasRight" data-off-canvas data-position="right">
-              <ul className="vertical dropdown menu" data-dropdown-menu>
-                <li><a href="right_item_1">Right item 1</a></li>
-                <li><a href="right_item_2">Right item 2</a></li>
-                <li><a href="right_item_3">Right item 3</a></li>
-              </ul>
-            </div>
-
-            {/*<!-- "wider" top-bar menu for 'medium' and up -->*/}
-            <div id="widemenu" className="top-bar">
-              <div className="top-bar-left">
-                <ul className="dropdown menu" data-dropdown-menu>
-                  <li className="menu-text">Foundation</li>
-                  <li className="has-submenu">
-                    <a href="#">Item 1</a>
-                    <ul className="menu submenu vertical" data-submenu>
-                      <li><a href="left_wide_11">Left wide 1</a></li>
-                      <li><a href="left_wide_12">Left wide 2</a></li>
-                      <li><a href="left_wide_13">Left wide 3</a></li>
-                    </ul>
-                  </li>
-                  <li className="has-submenu">
-                    <a href="#">Item 2</a>
-                    <ul className="menu submenu vertical" data-submenu>
-                      <li><a href="left_wide_21">Left wide 1</a></li>
-                      <li><a href="left_wide_22">Left wide 2</a></li>
-                      <li><a href="left_wide_23">Left wide 3</a></li>
-                    </ul>
-                  </li>
-                </ul>
-              </div>
-              <div className="top-bar-right">
-                <ul className="menu">
-                  <li><input type="search" placeholder="Search" /></li>
-                  <li><button className="button">Search</button></li>
-                </ul>
-              </div>
-            </div>
-
-            {/*<!-- original content goes in this container -->*/}
-            <div className="off-canvas-content" data-off-canvas-content>
-              Some stuff
-            </div>
-
-          {/*<!-- close wrapper, no more content after this -->*/}
-          </div>
-        </div>
-
         <div className="mainMenu row">
-          <div className="medium-6 medium-centered large-4 large-centered columns">
-            <h2>Main Menu</h2>
-            <ul>
-              <li><a href='' onClick={this.changePass}>Change my password</a></li>
-              <li><a href='' onClick={this.logoutCurrentUser}>Logout {this.props.userAuth.uid}</a></li>
-            </ul>
-            <hr />
-            <div id="page-holder" />
-          </div>
+          <h2>Main Menu</h2>
+          <ul>
+            <li><a href='' onClick={this.changePass}>Change my password</a></li>
+            <li><a href='' onClick={this.logoutCurrentUser}>Logout {this.props.userAuth.uid}</a></li>
+          </ul>
+          <hr />
+          <div id="page-holder" />
         </div>
-       </div>
+      </div>
     );
   }
 });
@@ -548,42 +473,40 @@ var ChangePass = React.createClass({
   },
   render: function() {
     return (
-      <div id="changePassContainer" className="row">
-        <div className="small-12 columns">
-          <form>
-            <div className="user-form">
-              <h4 className="text-center">Change your password</h4>
-              <label>Old password
-                <input
-                  type="password"
-                  id="oldPswrd"
-                  autoFocus
-                  value={this.state.oldPass}
-                  onChange={this.handleOldPass}
-                  />
-              </label>
-              <label>New Password
-                <input
+      <div id="changePassContainer" className="medium-6 medium-centered large-4 large-centered columns">
+        <form>
+          <div className="user-form">
+            <h4 className="text-center">Change your password</h4>
+            <label>Old password
+              <input
                 type="password"
-                id="newPswrd"
-                placeholder="Enter your new password"
-                value={this.state.newPass}
-                onChange={this.handlePassChange}
-              />
-              </label>
-              <label>
-                <input
-                  type="password"
-                  id="oldPswrd"
-                  placeholder="Confirm new password"
-                  value={this.state.newPass2}
-                  onChange={this.handlePass2Change}
+                id="oldPswrd"
+                autoFocus
+                value={this.state.oldPass}
+                onChange={this.handleOldPass}
                 />
-              </label>
-              <p><a onClick={this.handleSubmit} type="submit" className="button expanded">Change Password</a></p>
-            </div>
-          </form>
-        </div>
+            </label>
+            <label>New Password
+              <input
+              type="password"
+              id="newPswrd"
+              placeholder="Enter your new password"
+              value={this.state.newPass}
+              onChange={this.handlePassChange}
+            />
+            </label>
+            <label>
+              <input
+                type="password"
+                id="oldPswrd"
+                placeholder="Confirm new password"
+                value={this.state.newPass2}
+                onChange={this.handlePass2Change}
+              />
+            </label>
+            <p><a onClick={this.handleSubmit} type="submit" className="button expanded">Change Password</a></p>
+          </div>
+        </form>
       </div>
     );
   }
