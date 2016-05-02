@@ -1,4 +1,4 @@
-#appContainer, #changePassContainer {
+#login-box, #page-holder {
   padding-top: 1rem;
 }
 
@@ -17,4 +17,15 @@
 .user-form {
   border: 1px solid #cacaca;
   padding: 1rem;
-  border-radius: 3px; }
+  border-radius: 3px;
+}
+
+.menu {
+	padding: 0.5rem 0 0.5rem;
+	background-color: #dbe5ea;
+	border-bottom: 1px;
+}
+
+.user-item {
+	margin-bottom: 1rem;
+}

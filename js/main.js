@@ -19,7 +19,7 @@ var UnitPriceApp = React.createClass ({
             <div id="appContainer" className="medium-6 medium-centered large-4 large-centered columns" />
           </div>
           ),
-        app: <div id="appContainer" />
+        app: <div><div id="appContainer" /><div id="page-holder" /></div>
       }
     }
   },
@@ -102,14 +102,14 @@ var LoginBox = React.createClass({
     var JSXitem;
     if (this.state.newAcct) {
       JSXitem = (
-        <div>
+        <div id="login-box">
           <CreateAcct />
           <p className="text-center nav-a"><a onClick={this.backToLogin}>Cancel</a></p>
         </div>
       )
     } else {
       JSXitem = (
-        <div>
+        <div id="login-box">
           <LoginForm />
           <div id="createBtnContainer">
             <p><a onClick={this.handleCreateAcct}  type="button" id="createAcctBtn" className="button expanded">Create a New Account</a></p>
@@ -376,6 +376,47 @@ var CreateAcct = React.createClass({
 *********************************************/
 
 var MainMenu = React.createClass({
+  toUserPrefs: function(e) {
+    e.preventDefault();
+    ReactDOM.render(
+      <UserPrefs userAuth={this.props.userAuth} />,
+      document.getElementById('page-holder')
+    );
+  },
+  render: function() {
+    return (
+      <div>
+        <div className="mainMenu row">
+          <ul className="menu align-right">
+            <li><a href="" onClick={this.toUserPrefs}><i className="fi-torso" /><span>Account</span></a></li>
+            <li><a href="" ><i className="fi-pricetag-multiple" /><i className="fi-shuffle" /><span>Price it!</span></a></li>
+          </ul>
+        </div>
+      </div>
+    );
+  }
+});
+
+/********************************************
+* Component
+* @description User preference page
+*********************************************/
+var UserPrefs = React.createClass({
+  render: function() {
+    return (
+      <div className="row">
+        <ChangePass userAuth={this.props.userAuth} />
+        <Logout userAuth={this.props.userAuth} />
+      </div>
+    )
+  }
+});
+
+/********************************************
+* Component
+* @description Logout form (just a button)
+*********************************************/
+var Logout = React.createClass({
   logoutCurrentUser: function(e, uid) {
     e.preventDefault();
     let userRef = fireBaseURL.child('users');
@@ -384,29 +425,20 @@ var MainMenu = React.createClass({
       });
     fireBaseURL.unauth();
   },
-  changePass: function(e) {
-    e.preventDefault();
-    ReactDOM.render(
-      <ChangePass userAuth={this.props.userAuth} />,
-      document.getElementById('page-holder')
-    );
-  },
   render: function() {
     return (
-      <div>
-        <div className="mainMenu row">
-          <h2>Main Menu</h2>
-          <ul>
-            <li><a href='' onClick={this.changePass}>Change my password</a></li>
-            <li><a href='' onClick={this.logoutCurrentUser}>Logout {this.props.userAuth.uid}</a></li>
-          </ul>
-          <hr />
-          <div id="page-holder" />
-        </div>
+      <div id="logout-container" className="user-item medium-6 large-4 columns">
+        <form>
+          <div className="user-form">
+            <h4 className="text-center">Logout this user</h4>
+            <p><a href='' onClick={this.logoutCurrentUser} className="button expanded">Logout</a></p>
+          </div>
+        </form>
       </div>
-    );
+    )
   }
 });
+
 
 /********************************************
 * Component
@@ -473,7 +505,7 @@ var ChangePass = React.createClass({
   },
   render: function() {
     return (
-      <div id="changePassContainer" className="medium-6 medium-centered large-4 large-centered columns">
+      <div id="change-pass-container" className="user-item medium-6 large-4 columns">
         <form>
           <div className="user-form">
             <h4 className="text-center">Change your password</h4>
