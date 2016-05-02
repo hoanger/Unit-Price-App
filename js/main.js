@@ -524,6 +524,10 @@ var ChangePass = React.createClass({
             console.log(error);
           } else {
             message = "Password changed successfully";
+            ReactDOM.render(
+            <PriceApp userAuth={self.props.userAuth} />,
+              document.getElementById('page-holder')
+            );
             console.log(message);
           }
         });
