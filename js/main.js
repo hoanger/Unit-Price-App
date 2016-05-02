@@ -372,10 +372,23 @@ var CreateAcct = React.createClass({
 
 /********************************************
 * Component
-* @description Main app page component for logged in users
+* @description Main menu page component for logged in users
 *********************************************/
 
 var MainMenu = React.createClass({
+  componentDidMount: function() {
+    ReactDOM.render(
+      <PriceApp userAuth={this.props.userAuth} />,
+      document.getElementById('page-holder')
+    );
+  },
+  toPriceApp: function(e) {
+    e.preventDefault();
+    ReactDOM.render(
+      <PriceApp userAuth={this.props.userAuth} />,
+      document.getElementById('page-holder')
+    );
+  },
   toUserPrefs: function(e) {
     e.preventDefault();
     ReactDOM.render(
@@ -383,13 +396,14 @@ var MainMenu = React.createClass({
       document.getElementById('page-holder')
     );
   },
+
   render: function() {
     return (
       <div>
         <div className="mainMenu row">
           <ul className="menu align-right">
             <li><a href="" onClick={this.toUserPrefs}><i className="fi-torso" /><span>Account</span></a></li>
-            <li><a href="" ><i className="fi-pricetag-multiple" /><i className="fi-shuffle" /><span>Price it!</span></a></li>
+            <li><a href="" onClick={this.toPriceApp}><i className="fi-pricetag-multiple" /><i className="fi-shuffle" /><span>Price it!</span></a></li>
           </ul>
         </div>
       </div>
@@ -399,14 +413,28 @@ var MainMenu = React.createClass({
 
 /********************************************
 * Component
+* @description Main pricing page
+*********************************************/
+var PriceApp = React.createClass({
+  render: function() {
+    return (
+      <div className="row align-center">
+        <div className="column">Main app here</div>
+      </div>
+    )
+  }
+});
+/********************************************
+* Component
 * @description User preference page
 *********************************************/
 var UserPrefs = React.createClass({
   render: function() {
     return (
-      <div className="row">
+      <div className="row align-center">
         <ChangePass userAuth={this.props.userAuth} />
         <Logout userAuth={this.props.userAuth} />
+        <div className="user-item medium-6 large-4 columns" />
       </div>
     )
   }
