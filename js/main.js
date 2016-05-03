@@ -382,6 +382,13 @@ var MainMenu = React.createClass({
       document.getElementById('page-holder')
     );
   },
+  toCompare: function(e) {
+    e.preventDefault();
+    ReactDOM.render(
+      <Compare userAuth={this.props.userAuth} />,
+      document.getElementById('page-holder')
+    );
+  },
   toPriceApp: function(e) {
     e.preventDefault();
     ReactDOM.render(
@@ -401,13 +408,30 @@ var MainMenu = React.createClass({
     return (
       <div>
         <div className="mainMenu row">
-          <ul className="menu align-right">
-            <li><a href="" onClick={this.toUserPrefs}><i className="fi-torso" /><span>Account</span></a></li>
-            <li><a href="" onClick={this.toPriceApp}><i className="fi-pricetag-multiple" /><i className="fi-shuffle" /><span>Price it!</span></a></li>
-          </ul>
+          <div className="menu-centered">
+            <ul className="menu">
+              <li><a href="" onClick={this.toCompare}><i className="fi-pricetag-multiple" /><span>Compare</span></a></li>
+              <li><a href="" onClick={this.toPriceApp}><i className="fi-bookmark" /><span>Price it!</span></a></li>
+              <li><a href="" onClick={this.toUserPrefs}><i className="fi-torso" /><span>Account</span></a></li>
+            </ul>
+          </div>
         </div>
       </div>
     );
+  }
+});
+
+/********************************************
+* Component
+* @description Quick Compare page
+*********************************************/
+var Compare = React.createClass({
+  render: function() {
+    return (
+      <div className="row align-center">
+        <div className="column">Compare module</div>
+      </div>
+    )
   }
 });
 
@@ -424,6 +448,7 @@ var PriceApp = React.createClass({
     )
   }
 });
+
 /********************************************
 * Component
 * @description User preference page
