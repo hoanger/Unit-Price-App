@@ -14,10 +14,14 @@
 .nav-a {
 	margin-top: 1rem;
 }
+
 .user-form {
   border: 1px solid #cacaca;
   padding: 1rem;
   border-radius: 3px;
+}
+.compare-form {
+	margin-bottom: 1rem;
 }
 
 .menu-centered {

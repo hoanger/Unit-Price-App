@@ -428,10 +428,85 @@ var MainMenu = React.createClass({
 *********************************************/
 var Compare = React.createClass({
   mixins: [ReactFireMixin],
+  getInitialState: function() {
+    return {
+      items: ['one','two']
+    };
+  },
+  compareItems: function() {
+    console.log('Ref 1 is ', this.refs.one.state);
+    console.log('Ref 2 is ', this.refs.two.state);
+
+    return;
+  },
   render: function() {
     return (
       <div className="row align-center">
-        <div className="column">Compare module</div>
+        <div className="column">
+          <h2>Compare Items</h2>
+          {this.state.items.map(function(item, i) {
+            return (
+              <CompItem className="" key={i} ref={item} num={i+1}/>
+            );
+          })}
+
+          <p><a onClick={this.compareItems} type="submit" className="button expanded">Compare!</a></p>
+        </div>
+      </div>
+    )
+  }
+});
+
+/********************************************
+* Component
+* @description Quick Compare item
+*********************************************/
+var CompItem = React.createClass({
+  mixins: [ReactFireMixin],
+  getInitialState: function() {
+    return {}
+  },
+  handleNameChange: function(e) {
+    this.setState({name: e.target.value});
+  },
+  handlePriceChange: function(e) {
+    this.setState({price: e.target.value});
+  },
+  handleUnitChange: function(e) {
+    this.setState({unit: e.target.value});
+  },
+  render: function() {
+    return (
+      <div className="row align-center">
+        <div className="column">
+          <h2>Item {this.props.num}</h2>
+          <div className="user-form compare-form">
+            <label>Item Name
+              <input
+                type="text"
+                id="itemName"
+                placeholder="Optional"
+                value={this.state.itemName}
+                onChange={this.handleNameChange}
+              />
+            </label>
+            <label>Price
+              <input
+                type="number"
+                id="itemPrice"
+                value={this.state.itemPrice}
+                onChange={this.handlePriceChange}
+              />
+            </label>
+            <label>Unit
+              <select id="itemUnit" onChange={this.handleUnitChange}>
+                <option disabled selected value> -- select an option -- </option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+              </select>
+            </label>
+          </div>
+        </div>
       </div>
     )
   }
