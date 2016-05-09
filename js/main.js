@@ -376,6 +376,7 @@ var CreateAcct = React.createClass({
 *********************************************/
 
 var MainMenu = React.createClass({
+  mixins: [ReactFireMixin],
   componentDidMount: function() {
     ReactDOM.render(
       <PriceApp userAuth={this.props.userAuth} />,
@@ -426,6 +427,7 @@ var MainMenu = React.createClass({
 * @description Quick Compare page
 *********************************************/
 var Compare = React.createClass({
+  mixins: [ReactFireMixin],
   render: function() {
     return (
       <div className="row align-center">
@@ -440,6 +442,7 @@ var Compare = React.createClass({
 * @description Main pricing page
 *********************************************/
 var PriceApp = React.createClass({
+  mixins: [ReactFireMixin],
   render: function() {
     return (
       <div className="row align-center">
