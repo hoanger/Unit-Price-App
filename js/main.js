@@ -430,30 +430,44 @@ var Compare = React.createClass({
   mixins: [ReactFireMixin],
   getInitialState: function() {
     return {
-      items: ['one','two']
+      items: ['one','two'],
+      comparing: false
     };
   },
   compareItems: function() {
     console.log('Ref 1 is ', this.refs.one.state);
     console.log('Ref 2 is ', this.refs.two.state);
-
-    return;
+    this.setState({comparing: true});
+  },
+  resetCompare: function() {
+    this.setState(this.getInitialState());
   },
   render: function() {
-    return (
-      <div className="row align-center">
-        <div className="column">
-          <h2>Compare Items</h2>
-          {this.state.items.map(function(item, i) {
-            return (
-              <CompItem className="" key={i} ref={item} num={i+1}/>
-            );
-          })}
+    if (this.state.comparing) {
+      return (
+        <div className="row align-center">
+          <div className="column">
+            <h4>Comparing items</h4>
 
-          <p><a onClick={this.compareItems} type="submit" className="button expanded">Compare!</a></p>
+            <p><a onClick={this.resetCompare} type="submit" className="button expanded">Reset</a></p>
+          </div>
         </div>
-      </div>
-    )
+      )
+    } else {
+      return (
+        <div className="row align-center">
+          <div className="column">
+            <h4>Compare Items</h4>
+            {this.state.items.map(function(item, i) {
+              return (
+                <CompItem className="" key={i} ref={item} num={i+1}/>
+              );
+            })}
+            <p><a onClick={this.compareItems} type="submit" className="button expanded">Compare!</a></p>
+          </div>
+        </div>
+      )
+    }
   }
 });
 
@@ -508,13 +522,13 @@ var CompItem = React.createClass({
                 <label>
                   <select id="itemUnit" onChange={this.handleUnitChange}>
                     <option disabled selected value> -units- </option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
+                    <option value="g">g</option>
+                    <option value="kg">kg</option>
                   </select>
                 </label>
               </div>
             </div>
-            <label>Name
+            <label>Item name
               <input
                 type="text"
                 id="itemName"
