@@ -479,9 +479,42 @@ var CompItem = React.createClass({
     return (
       <div className="row align-center">
         <div className="column">
-          <h2>Item {this.props.num}</h2>
-          <div className="user-form compare-form">
-            <label>Item Name
+          <div className="user-form compare-form column">
+            <h4>Item {this.props.num}</h4>
+            <div className="input-group">
+              <span className="input-group-label">$</span>
+              <input
+                className="input-group-field"
+                type="number"
+                id="itemPrice"
+                placeholder="Price"
+                value={this.state.itemPrice}
+                onChange={this.handlePriceChange}
+              />
+            </div>
+            <div className="row">
+              <div className="small-8 columns">
+                <input
+                  type="text"
+                  aria-describedby="amountHelpText"
+                  id="itemAmount"
+                  placeholder="Amount"
+                  value={this.state.itemAmount}
+                  onChange={this.handleNameChange}
+                />
+                <p className="help-text" id="amountHelpText">e.g 250 mL</p>
+              </div>
+              <div className="small-4 columns">
+                <label>
+                  <select id="itemUnit" onChange={this.handleUnitChange}>
+                    <option disabled selected value> -units- </option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+            <label>Name
               <input
                 type="text"
                 id="itemName"
@@ -489,21 +522,6 @@ var CompItem = React.createClass({
                 value={this.state.itemName}
                 onChange={this.handleNameChange}
               />
-            </label>
-            <label>Price
-              <input
-                type="number"
-                id="itemPrice"
-                value={this.state.itemPrice}
-                onChange={this.handlePriceChange}
-              />
-            </label>
-            <label>Unit
-              <select id="itemUnit" onChange={this.handleUnitChange}>
-                <option disabled selected value> -- select an option -- </option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-              </select>
             </label>
           </div>
         </div>
