@@ -431,25 +431,33 @@ var Compare = React.createClass({
   getInitialState: function() {
     return {
       items: ['one','two'],
-      comparing: false
+      comparing: false,
+      units: null
     };
   },
   compareItems: function() {
-    console.log('Ref 1 is ', this.refs.one.state);
-    console.log('Ref 2 is ', this.refs.two.state);
     this.setState({comparing: true});
   },
   resetCompare: function() {
     this.setState(this.getInitialState());
   },
+  weightUnits: function() {
+    this.setState({units: 'weight'});
+  },
+  volumeUnits: function() {
+    this.setState({units: 'volume'});
+  },
+  numberUnits: function() {
+    this.setState({units: 'items'});
+  },
   render: function() {
+    var self = this;
     if (this.state.comparing) {
       return (
         <div className="row align-center">
           <div className="column">
             <h4>Comparing items</h4>
-
-            <p><a onClick={this.resetCompare} type="submit" className="button expanded">Reset</a></p>
+            <a onClick={this.resetCompare} type="submit" className="button expanded">Reset</a>
           </div>
         </div>
       )
@@ -458,12 +466,20 @@ var Compare = React.createClass({
         <div className="row align-center">
           <div className="column">
             <h4>Compare Items</h4>
-            {this.state.items.map(function(item, i) {
-              return (
-                <CompItem className="" key={i} ref={item} num={i+1}/>
-              );
-            })}
-            <p><a onClick={this.compareItems} type="submit" className="button expanded">Compare!</a></p>
+            <div className="button-group expanded">
+              <a onClick={this.weightUnits} className="success button">Weight</a>
+              <a onClick={this.volumeUnits} className="button">Volume</a>
+              <a onClick={this.numberUnits} className="warning button">Number</a>
+            </div>
+
+              <div style={this.state.units ? null : {display: 'none'}}>
+                {this.state.items.map(function(item, i) {
+                  return (
+                    <CompItem key={i} ref={item} num={i+1} units={self.state.units ? self.state.units : "blah"}/>
+                  );
+                })}
+                <a onClick={this.compareItems} type="submit" className="button expanded">Compare!</a>
+              </div>
           </div>
         </div>
       )
@@ -478,7 +494,46 @@ var Compare = React.createClass({
 var CompItem = React.createClass({
   mixins: [ReactFireMixin],
   getInitialState: function() {
-    return {}
+    return {unitGrouping: []}
+  },
+  componentWillMount: function() {
+    var unitRef = fireBaseURL.child('units');
+    var itemsRef = unitRef.child("items");
+    var weightRef = unitRef.child("weight");
+    var volumeRef = unitRef.child("volume")
+
+    this.bindAsArray(unitRef, 'units');
+    this.bindAsArray(itemsRef, 'items');
+    this.bindAsArray(weightRef, 'weight');
+    this.bindAsArray(volumeRef, 'volume');
+  },
+  componentDidMount: function() {
+    this.setUnits(this.props);
+  },
+  componentWillReceiveProps: function(nextProps) {
+    this.setUnits(nextProps);
+  },
+  setUnits: function(props) {
+    var unitType = props.units;
+    var unitArr = [];
+    switch (unitType) {
+      case 'weight':
+      default:
+        unitArr = this.state.weight.map(this.getKey);
+        break;
+      case 'volume':
+        unitArr = this.state.volume.map(this.getKey);
+        break;
+      case 'items':
+        unitArr = this.state.items.map(this.getKey);
+        break;
+    }
+    console.log('unitArr ', unitArr);
+    this.setState({unitGrouping: unitArr});
+  },
+  getKey: function(item, index) {
+    console.log('getkey',item['.key']);
+    return item['.key'];
   },
   handleNameChange: function(e) {
     this.setState({name: e.target.value});
@@ -490,6 +545,25 @@ var CompItem = React.createClass({
     this.setState({unit: e.target.value});
   },
   render: function() {
+    var self = this;
+
+    var createUnits = function(item, index) {
+      return <option key={index} value={item}>{item}</option>;
+    }
+
+    var createUnitSelect = function() {
+      return (
+        <div className="small-4 columns">
+          <label>
+            <select id="itemUnit" onChange={self.handleUnitChange}>
+              <option disabled selected> -{self.props.units}- </option>
+              {self.state.unitGrouping.map(createUnits)}
+            </select>
+          </label>
+        </div>
+      )
+    };
+
     return (
       <div className="row align-center">
         <div className="column">
@@ -509,25 +583,20 @@ var CompItem = React.createClass({
             <div className="row">
               <div className="small-8 columns">
                 <input
-                  type="text"
+                  type="number"
                   aria-describedby="amountHelpText"
                   id="itemAmount"
                   placeholder="Amount"
                   value={this.state.itemAmount}
                   onChange={this.handleNameChange}
                 />
-                <p className="help-text" id="amountHelpText">e.g 250 mL</p>
+                <p className="help-text" id="amountHelpText">e.g 250 mL or 2 dozen</p>
               </div>
-              <div className="small-4 columns">
-                <label>
-                  <select id="itemUnit" onChange={this.handleUnitChange}>
-                    <option disabled selected value> -units- </option>
-                    <option value="g">g</option>
-                    <option value="kg">kg</option>
-                  </select>
-                </label>
-              </div>
+              {createUnitSelect()}
             </div>
+
+
+
             <label>Item name
               <input
                 type="text"
