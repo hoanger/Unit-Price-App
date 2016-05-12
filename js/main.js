@@ -472,13 +472,15 @@ var Compare = React.createClass({
               <a onClick={this.numberUnits} className="warning button">Number</a>
             </div>
 
-              <div style={this.state.units ? null : {display: 'none'}}>
+              <div className="row" style={this.state.units ? null : {display: 'none'}}>
                 {this.state.items.map(function(item, i) {
                   return (
                     <CompItem key={i} ref={item} num={i+1} units={self.state.units ? self.state.units : "blah"}/>
                   );
                 })}
-                <a onClick={this.compareItems} type="submit" className="button expanded">Compare!</a>
+                <div className="columns">
+                  <a onClick={this.compareItems} type="submit" className="button expanded">Compare!</a>
+                </div>
               </div>
           </div>
         </div>
@@ -502,13 +504,9 @@ var CompItem = React.createClass({
     var weightRef = unitRef.child("weight");
     var volumeRef = unitRef.child("volume")
 
-    this.bindAsArray(unitRef, 'units');
     this.bindAsArray(itemsRef, 'items');
     this.bindAsArray(weightRef, 'weight');
     this.bindAsArray(volumeRef, 'volume');
-  },
-  componentDidMount: function() {
-    this.setUnits(this.props);
   },
   componentWillReceiveProps: function(nextProps) {
     this.setUnits(nextProps);
@@ -532,7 +530,6 @@ var CompItem = React.createClass({
     this.setState({unitGrouping: unitArr});
   },
   getKey: function(item, index) {
-    console.log('getkey',item['.key']);
     return item['.key'];
   },
   handleNameChange: function(e) {
@@ -546,6 +543,22 @@ var CompItem = React.createClass({
   },
   render: function() {
     var self = this;
+
+    var helpText = function() {
+      var helpTxt;
+      switch (self.props.units) {
+        case 'weight':
+          helpTxt = "e.g. 250 mL"
+          break;
+        case 'items':
+          helpTxt = "e.g. 2 dozen"
+          break;
+        case 'volume':
+        default:
+          helpTxt = "e.g. 355 mL"
+      }
+      return helpTxt;
+    }
 
     var createUnits = function(item, index) {
       return <option key={index} value={item}>{item}</option>;
@@ -565,8 +578,8 @@ var CompItem = React.createClass({
     };
 
     return (
-      <div className="row align-center">
-        <div className="column">
+      <div className="medium-6 columns align-center">
+        <div>
           <div className="user-form compare-form column">
             <h4>Item {this.props.num}</h4>
             <div className="input-group">
@@ -590,13 +603,10 @@ var CompItem = React.createClass({
                   value={this.state.itemAmount}
                   onChange={this.handleNameChange}
                 />
-                <p className="help-text" id="amountHelpText">e.g 250 mL or 2 dozen</p>
+                <p className="help-text" id="amountHelpText">{helpText()}</p>
               </div>
               {createUnitSelect()}
             </div>
-
-
-
             <label>Item name
               <input
                 type="text"
