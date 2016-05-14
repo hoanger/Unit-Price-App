@@ -430,12 +430,50 @@ var Compare = React.createClass({
   getInitialState: function() {
     return {
       items: ['one','two'],
+      compItems: {
+        baseunit: '',
+        conversionMap: [],
+        items: []
+      },
       comparing: false,
       units: null
     };
   },
   compareItems: function() {
+    var self = this;
+    var firstItemRef = this.state.items[0];
+
+    this.state.items.map(function(item, i) {
+
+    });
+
+    this.setState({
+      compItems: {
+        baseunit: self.refs[firstItemRef].state.itemUnit,
+        conversionMap: ,
+        items: []
+      }
+    });
     this.setState({comparing: true});
+  },
+  getComparison: function() {
+    var self = this;
+    return this.state.items.map(function(item, i) {
+
+      if (self.refs[item]) {
+        return (
+          <div key={item}>
+            <h5>Item {item}</h5>
+            <ul>
+              <li>Name: {self.refs[item].state.itemName}</li>
+              <li>Price: {self.refs[item].state.itemPrice}</li>
+              <li>Amount: {self.refs[item].state.itemAmount}</li>
+              <li>Unit: {self.refs[item].state.itemUnit}</li>
+            </ul>
+          </div>
+        );
+      }
+    });
   },
   resetCompare: function() {
     this.setState(this.getInitialState());
@@ -456,21 +494,7 @@ var Compare = React.createClass({
         <div className="row align-center" style={this.state.comparing ? null : {display: 'none'}}>
           <div className="column">
             <h4>Comparing items by {self.state.units ? self.state.units : null}</h4>
-              {this.state.items.map(function(item, i) {
-                if (self.refs[item]) {
-                  return (
-                    <div key={item}>
-                      <h5>Item {item}</h5>
-                      <ul>
-                        <li>Name: {self.refs[item].state.itemName}</li>
-                        <li>Price: {self.refs[item].state.itemPrice}</li>
-                        <li>Amount: {self.refs[item].state.itemAmount}</li>
-                        <li>Unit: {self.refs[item].state.itemUnit}</li>
-                      </ul>
-                    </div>
-                  );
-                }
-              })}
+            {self.getComparison()}
             <a onClick={this.resetCompare} type="submit" className="button expanded">Reset</a>
           </div>
         </div>
@@ -531,7 +555,6 @@ var CompItem = React.createClass({
   },
   componentWillReceiveProps: function(nextProps) {
     this.setUnits(nextProps);
-    console.log(nextProps);
     if (!nextProps.compare && this.props.compare) {
       this.setState(this.getInitialState());
     }
