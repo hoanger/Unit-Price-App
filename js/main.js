@@ -56,11 +56,6 @@ var UnitPriceApp = React.createClass ({
       <UnitPriceApp isLoggedIn={authData} />,
       document.getElementById('content')
     );
-    if (authData) {
-      console.log("User " + authData.uid + " is logged in with " + authData.provider);
-    } else {
-      console.log("User is logged out");
-    }
   },
   render: function() {
     var JSXitem;
@@ -379,7 +374,7 @@ var MainMenu = React.createClass({
   mixins: [ReactFireMixin],
   componentDidMount: function() {
     ReactDOM.render(
-      <PriceApp userAuth={this.props.userAuth} />,
+      <Compare userAuth={this.props.userAuth} />,
       document.getElementById('page-holder')
     );
   },
@@ -437,7 +432,6 @@ var Compare = React.createClass({
   },
   compareItems: function() {
     this.setState({comparing: true});
-
   },
   resetCompare: function() {
     this.setState(this.getInitialState());
@@ -457,7 +451,7 @@ var Compare = React.createClass({
       <div>
         <div className="row align-center" style={this.state.comparing ? null : {display: 'none'}}>
           <div className="column">
-            <h4>Comparing items by {self.state.units}</h4>
+            <h4>Comparing items by {self.state.units ? self.state.units : null}</h4>
               {this.state.items.map(function(item, i) {
                 if (self.refs[item]) {
                   return (
