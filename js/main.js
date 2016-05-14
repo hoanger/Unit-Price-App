@@ -36,9 +36,14 @@ var UnitPriceApp = React.createClass ({
       let userRef = fireBaseURL.child('users');
       userRef.child(authState.uid).update({lastLoggedIn: Firebase.ServerValue.TIMESTAMP});
       ReactDOM.render(
+        <div className="row column"><h1>Welcome</h1></div>,
+        document.getElementById('page-holder')
+      );
+      ReactDOM.render(
         <MainMenu userAuth={authState} />,
         document.getElementById('appContainer')
       );
+
     } else {
       ReactDOM.render(
         <LoginBox />,
@@ -153,14 +158,9 @@ var LoginForm = React.createClass({
     }, function(error, authData){
       if (!error) {
         console.log("Authenticated successfully with payload:", authData);
-        /* Load app when authenticated */
-        ReactDOM.render(
-          <MainMenu userAuth={ authData }/>,
-          document.getElementById('appContainer')
-        );
       } else {
-          self.setState({loginName: '', password: ''});
-          console.log("Login Failed!", error);
+        self.setState({loginName: '', password: ''});
+        console.log("Login Failed!", error);
       }
     })
   },
@@ -372,34 +372,38 @@ var CreateAcct = React.createClass({
 
 var MainMenu = React.createClass({
   mixins: [ReactFireMixin],
-  componentDidMount: function() {
-    ReactDOM.render(
-      <Compare userAuth={this.props.userAuth} />,
-      document.getElementById('page-holder')
-    );
+  getInitialState: function() {
+    return {appComponent: 'compare'};
+  },
+  componentDidUpdate: function() {
+    var self = this;
+    var JSXitem
+    switch (self.state.appComponent) {
+      case 'compare':
+      default:
+        JSXitem = <Compare userAuth={self.props.userAuth} />;
+        break;
+      case 'priceItem':
+        JSXitem = <PriceApp userAuth={self.props.userAuth} />
+        break;
+      case 'account':
+        JSXitem = <UserPrefs userAuth={self.props.userAuth} />
+        break;
+    }
+    ReactDOM.render(JSXitem, document.getElementById('page-holder'));
   },
   toCompare: function(e) {
     e.preventDefault();
-    ReactDOM.render(
-      <Compare userAuth={this.props.userAuth} />,
-      document.getElementById('page-holder')
-    );
+    this.setState({appComponent: 'compare'});
   },
   toPriceApp: function(e) {
     e.preventDefault();
-    ReactDOM.render(
-      <PriceApp userAuth={this.props.userAuth} />,
-      document.getElementById('page-holder')
-    );
+    this.setState({appComponent: 'priceItem'});
   },
   toUserPrefs: function(e) {
     e.preventDefault();
-    ReactDOM.render(
-      <UserPrefs userAuth={this.props.userAuth} />,
-      document.getElementById('page-holder')
-    );
+    this.setState({appComponent: 'account'});
   },
-
   render: function() {
     return (
       <div>
@@ -527,6 +531,7 @@ var CompItem = React.createClass({
   },
   componentWillReceiveProps: function(nextProps) {
     this.setUnits(nextProps);
+    console.log(nextProps);
     if (!nextProps.compare && this.props.compare) {
       this.setState(this.getInitialState());
     }
