@@ -429,36 +429,51 @@ var Compare = React.createClass({
   mixins: [ReactFireMixin],
   getInitialState: function() {
     return {
-      items: ['one','two'],
+      itemsList: ['one','two'],
       compItems: {
         baseunit: '',
-        conversionMap: [],
         items: []
       },
       comparing: false,
-      units: null
+      units: null,
+      unitGrouping: []
     };
   },
+  componentWillMount: function() {
+    var unitRef = fireBaseURL.child('units');
+    var itemsRef = unitRef.child("items");
+    var weightRef = unitRef.child("weight");
+    var volumeRef = unitRef.child("volume")
+
+    this.bindAsArray(itemsRef, 'items');
+    this.bindAsArray(weightRef, 'weight');
+    this.bindAsArray(volumeRef, 'volume');
+  },
+  setUnits: function(unitType) {
+    var unitArr = [];
+    switch (unitType) {
+      case 'weight':
+      default:
+        unitArr = this.state.weight.map(this.getKey);
+        break;
+      case 'volume':
+        unitArr = this.state.volume.map(this.getKey);
+        break;
+      case 'items':
+        unitArr = this.state.items.map(this.getKey);
+        break;
+    }
+    this.setState({unitGrouping: unitArr});
+  },
+  getKey: function(item, index) {
+    return item['.key'];
+  },
   compareItems: function() {
-    var self = this;
-    var firstItemRef = this.state.items[0];
-
-    this.state.items.map(function(item, i) {
-
-    });
-
-    this.setState({
-      compItems: {
-        baseunit: self.refs[firstItemRef].state.itemUnit,
-        conversionMap: ,
-        items: []
-      }
-    });
     this.setState({comparing: true});
   },
   getComparison: function() {
     var self = this;
-    return this.state.items.map(function(item, i) {
+    return this.state.itemsList.map(function(item, i) {
 
       if (self.refs[item]) {
         return (
@@ -480,12 +495,15 @@ var Compare = React.createClass({
   },
   weightUnits: function() {
     this.setState({units: 'weight'});
+    this.setUnits('weight');
   },
   volumeUnits: function() {
     this.setState({units: 'volume'});
+    this.setUnits('volume');
   },
   numberUnits: function() {
     this.setState({units: 'items'});
+    this.setUnits('items');
   },
   render: function() {
     var self = this;
@@ -507,7 +525,7 @@ var Compare = React.createClass({
               <a onClick={this.numberUnits} className="warning button">Number</a>
             </div>
             <div className="row" style={this.state.units ? null : {display: 'none'}}>
-              {this.state.items.map(function(item, i) {
+              {this.state.itemsList.map(function(item, i) {
                 return (
                   <CompItem
                     key={i}
@@ -515,6 +533,7 @@ var Compare = React.createClass({
                     num={i+1}
                     units={self.state.units ? self.state.units : "blah"}
                     compare={self.state.comparing}
+                    unitGrouping={self.state.unitGrouping}
                   />
                 );
               })}
@@ -540,44 +559,14 @@ var CompItem = React.createClass({
       itemName: '',
       itemPrice: '',
       itemAmount: '',
-      itemUnit: '',
-      unitGrouping: []}
+      itemUnit: ''
+    }
   },
-  componentWillMount: function() {
-    var unitRef = fireBaseURL.child('units');
-    var itemsRef = unitRef.child("items");
-    var weightRef = unitRef.child("weight");
-    var volumeRef = unitRef.child("volume")
 
-    this.bindAsArray(itemsRef, 'items');
-    this.bindAsArray(weightRef, 'weight');
-    this.bindAsArray(volumeRef, 'volume');
-  },
   componentWillReceiveProps: function(nextProps) {
-    this.setUnits(nextProps);
     if (!nextProps.compare && this.props.compare) {
       this.setState(this.getInitialState());
     }
-  },
-  setUnits: function(props) {
-    var unitType = props.units;
-    var unitArr = [];
-    switch (unitType) {
-      case 'weight':
-      default:
-        unitArr = this.state.weight.map(this.getKey);
-        break;
-      case 'volume':
-        unitArr = this.state.volume.map(this.getKey);
-        break;
-      case 'items':
-        unitArr = this.state.items.map(this.getKey);
-        break;
-    }
-    this.setState({unitGrouping: unitArr});
-  },
-  getKey: function(item, index) {
-    return item['.key'];
   },
   handleNameChange: function(e) {
     this.setState({itemName: e.target.value});
@@ -624,7 +613,7 @@ var CompItem = React.createClass({
           <label>
             <select id="itemUnit" onChange={self.handleUnitChange}>
               <option disabled selected> -{self.props.units}- </option>
-              {self.state.unitGrouping.map(createUnits)}
+              {self.props.unitGrouping.map(createUnits)}
             </select>
           </label>
         </div>
