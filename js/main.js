@@ -312,7 +312,7 @@ var CreateAcct = React.createClass({
   /**
   * @description Check user table if user name is taken
   * @param {string} username - user name
-  * @param {Firebase} usersTable - Firebase ref for the user table
+  * @param {Firebase} usersTable - Firebase reference for the user table
   * @returns {boolean} - true if match is found, false if otherwise
   */
   // TODO: refactor this to be reusable to check for anything with a child path
@@ -469,23 +469,22 @@ var Compare = React.createClass({
               <a onClick={this.volumeUnits} className="button">Volume</a>
               <a onClick={this.numberUnits} className="warning button">Number</a>
             </div>
-
-              <div className="row" style={this.state.units ? null : {display: 'none'}}>
-                {this.state.items.map(function(item, i) {
-                  return (
-                    <CompItem
-                      key={i}
-                      ref={item}
-                      num={i+1}
-                      units={self.state.units ? self.state.units : "blah"}
-                      compare={self.state.comparing}
-                    />
-                  );
-                })}
-                <div className="columns">
-                  <a onClick={this.compareItems} type="submit" className="button expanded">Compare!</a>
-                </div>
+            <div className="row" style={this.state.units ? null : {display: 'none'}}>
+              {this.state.items.map(function(item, i) {
+                return (
+                  <CompItem
+                    key={i}
+                    ref={item}
+                    num={i+1}
+                    units={self.state.units ? self.state.units : "blah"}
+                    compare={self.state.comparing}
+                  />
+                );
+              })}
+              <div className="columns">
+                <a onClick={this.compareItems} type="submit" className="button expanded">Compare!</a>
               </div>
+            </div>
           </div>
         </div>
       </div>
@@ -501,9 +500,9 @@ var CompItem = React.createClass({
   mixins: [ReactFireMixin],
   getInitialState: function() {
     return {
-      name: '',
-      price:'',
-      unit:'',
+      itemName: '',
+      itemPrice: '',
+      itemAmount: '',
       unitGrouping: []}
   },
   componentWillMount: function() {
@@ -518,6 +517,9 @@ var CompItem = React.createClass({
   },
   componentWillReceiveProps: function(nextProps) {
     this.setUnits(nextProps);
+    if (!nextProps.compare && this.props.compare) {
+      this.setState(this.getInitialState());
+    }
   },
   setUnits: function(props) {
     var unitType = props.units;
@@ -540,13 +542,13 @@ var CompItem = React.createClass({
     return item['.key'];
   },
   handleNameChange: function(e) {
-    this.setState({name: e.target.value});
+    this.setState({itemName: e.target.value});
   },
   handlePriceChange: function(e) {
-    this.setState({price: e.target.value});
+    this.setState({itemPrice: e.target.value});
   },
-  handleUnitChange: function(e) {
-    this.setState({unit: e.target.value});
+  handleAmountChange: function(e) {
+    this.setState({itemAmount: e.target.value});
   },
   render: function() {
     var self = this;
@@ -608,7 +610,7 @@ var CompItem = React.createClass({
                   id="itemAmount"
                   placeholder="Amount"
                   value={this.state.itemAmount}
-                  onChange={this.handleNameChange}
+                  onChange={this.handleAmountChange}
                 />
                 <p className="help-text" id="amountHelpText">{helpText()}</p>
               </div>
