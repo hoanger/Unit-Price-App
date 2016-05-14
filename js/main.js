@@ -437,6 +437,7 @@ var Compare = React.createClass({
   },
   compareItems: function() {
     this.setState({comparing: true});
+
   },
   resetCompare: function() {
     this.setState(this.getInitialState());
@@ -452,18 +453,15 @@ var Compare = React.createClass({
   },
   render: function() {
     var self = this;
-    if (this.state.comparing) {
-      return (
-        <div className="row align-center">
+    return (
+      <div>
+        <div className="row align-center" style={this.state.comparing ? null : {display: 'none'}}>
           <div className="column">
             <h4>Comparing items</h4>
             <a onClick={this.resetCompare} type="submit" className="button expanded">Reset</a>
           </div>
         </div>
-      )
-    } else {
-      return (
-        <div className="row align-center">
+        <div className="row align-center" style={this.state.comparing ? {display: 'none'} : null}>
           <div className="column">
             <h4>Compare Items</h4>
             <div className="button-group expanded">
@@ -475,7 +473,13 @@ var Compare = React.createClass({
               <div className="row" style={this.state.units ? null : {display: 'none'}}>
                 {this.state.items.map(function(item, i) {
                   return (
-                    <CompItem key={i} ref={item} num={i+1} units={self.state.units ? self.state.units : "blah"}/>
+                    <CompItem
+                      key={i}
+                      ref={item}
+                      num={i+1}
+                      units={self.state.units ? self.state.units : "blah"}
+                      compare={self.state.comparing}
+                    />
                   );
                 })}
                 <div className="columns">
@@ -484,8 +488,8 @@ var Compare = React.createClass({
               </div>
           </div>
         </div>
-      )
-    }
+      </div>
+    )
   }
 });
 
@@ -496,7 +500,11 @@ var Compare = React.createClass({
 var CompItem = React.createClass({
   mixins: [ReactFireMixin],
   getInitialState: function() {
-    return {unitGrouping: []}
+    return {
+      name: '',
+      price:'',
+      unit:'',
+      unitGrouping: []}
   },
   componentWillMount: function() {
     var unitRef = fireBaseURL.child('units');
@@ -526,7 +534,6 @@ var CompItem = React.createClass({
         unitArr = this.state.items.map(this.getKey);
         break;
     }
-    console.log('unitArr ', unitArr);
     this.setState({unitGrouping: unitArr});
   },
   getKey: function(item, index) {
