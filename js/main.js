@@ -461,7 +461,7 @@ var Compare = React.createClass({
               {this.state.items.map(function(item, i) {
                 if (self.refs[item]) {
                   return (
-                    <div>
+                    <div key={item}>
                       <h5>Item {item}</h5>
                       <ul>
                         <li>{self.refs[item].state.itemName}</li>
