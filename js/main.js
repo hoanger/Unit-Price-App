@@ -457,22 +457,22 @@ var Compare = React.createClass({
       <div>
         <div className="row align-center" style={this.state.comparing ? null : {display: 'none'}}>
           <div className="column">
-            <h4>Comparing items</h4>
+            <h4>Comparing items by {self.state.units}</h4>
               {this.state.items.map(function(item, i) {
                 if (self.refs[item]) {
                   return (
                     <div key={item}>
                       <h5>Item {item}</h5>
                       <ul>
-                        <li>{self.refs[item].state.itemName}</li>
-                        <li>{self.refs[item].state.itemPrice}</li>
-                        <li>{self.refs[item].state.itemAmount}</li>
+                        <li>Name: {self.refs[item].state.itemName}</li>
+                        <li>Price: {self.refs[item].state.itemPrice}</li>
+                        <li>Amount: {self.refs[item].state.itemAmount}</li>
+                        <li>Unit: {self.refs[item].state.itemUnit}</li>
                       </ul>
                     </div>
                   );
                 }
               })}
-
             <a onClick={this.resetCompare} type="submit" className="button expanded">Reset</a>
           </div>
         </div>
@@ -518,6 +518,7 @@ var CompItem = React.createClass({
       itemName: '',
       itemPrice: '',
       itemAmount: '',
+      itemUnit: '',
       unitGrouping: []}
   },
   componentWillMount: function() {
@@ -565,6 +566,9 @@ var CompItem = React.createClass({
   handleAmountChange: function(e) {
     this.setState({itemAmount: e.target.value});
   },
+  handleUnitChange: function(e) {
+    this.setState({itemUnit: e.target.value});
+  },
   render: function() {
     var self = this;
 
@@ -585,7 +589,11 @@ var CompItem = React.createClass({
     }
 
     var createUnits = function(item, index) {
-      return <option key={index} value={item}>{item}</option>;
+      return <option
+              key={index}
+              value={item}
+              onChange={self.handleUnitChange}
+            >{item}</option>;
     }
 
     var createUnitSelect = function() {
