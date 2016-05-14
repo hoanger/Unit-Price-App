@@ -458,6 +458,21 @@ var Compare = React.createClass({
         <div className="row align-center" style={this.state.comparing ? null : {display: 'none'}}>
           <div className="column">
             <h4>Comparing items</h4>
+              {this.state.items.map(function(item, i) {
+                if (self.refs[item]) {
+                  return (
+                    <div>
+                      <h5>Item {item}</h5>
+                      <ul>
+                        <li>{self.refs[item].state.itemName}</li>
+                        <li>{self.refs[item].state.itemPrice}</li>
+                        <li>{self.refs[item].state.itemAmount}</li>
+                      </ul>
+                    </div>
+                  );
+                }
+              })}
+
             <a onClick={this.resetCompare} type="submit" className="button expanded">Reset</a>
           </div>
         </div>
