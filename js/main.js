@@ -667,7 +667,7 @@ var CompItem = React.createClass({
           <div className="user-form compare-form column">
             <h4>Item {this.props.num}</h4>
             <div className="row">
-              <div className="small-4 columns">
+              <div className="small-5 columns">
               <label>Price
                   <div className="input-group">
                     <span className="input-group-label">$</span>
@@ -684,7 +684,7 @@ var CompItem = React.createClass({
                   </div>
                 </label>
               </div>
-              <div className="small-4 columns">
+              <div className="small-3 columns">
                 <label>Amount
                   <input
                     type="number"
