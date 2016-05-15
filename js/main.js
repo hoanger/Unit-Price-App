@@ -646,7 +646,7 @@ var CompItem = React.createClass({
 
     var createUnitSelect = function() {
       return (
-        <div className="small-6 columns">
+        <div className="small-4 columns">
           <label>{self.props.units}
             <select
               id="itemUnit"
@@ -666,26 +666,32 @@ var CompItem = React.createClass({
         <div>
           <div className="user-form compare-form column">
             <h4>Item {this.props.num}</h4>
-            <div className="input-group">
-              <span className="input-group-label">$</span>
-              <input
-                className="input-group-field"
-                type="number"
-                id="itemPrice"
-                placeholder="Price"
-                value={this.state.itemPrice}
-                onFocus={this.clearPrice}
-                onChange={this.handlePriceChange}
-              />
-            </div>
             <div className="row">
-              <div className="small-6 columns">
+              <div className="small-4 columns">
+              <label>Price
+                  <div className="input-group">
+                    <span className="input-group-label">$</span>
+                    <input
+                      className="input-group-field"
+                      type="number"
+                      id="itemPrice"
+                      placeholder="Price"
+                      min="0.00"
+                      value={this.state.itemPrice}
+                      onFocus={this.clearPrice}
+                      onChange={this.handlePriceChange}
+                    />
+                  </div>
+                </label>
+              </div>
+              <div className="small-4 columns">
                 <label>Amount
                   <input
                     type="number"
                     aria-describedby="amountHelpText"
                     id="itemAmount"
                     placeholder="Amount"
+                    min="0"
                     value={this.state.itemAmount}
                     onFocus={this.clearAmount}
                     onChange={this.handleAmountChange}
