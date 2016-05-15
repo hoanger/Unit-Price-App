@@ -430,10 +430,7 @@ var Compare = React.createClass({
   getInitialState: function() {
     return {
       itemsList: ['one','two'],
-      compItems: {
-        baseunit: '',
-        items: []
-      },
+      compItems: [],
       comparing: false,
       units: null,
       unitGrouping: []
@@ -469,21 +466,54 @@ var Compare = React.createClass({
     return item['.key'];
   },
   compareItems: function() {
-    this.setState({comparing: true});
+    var self = this;
+    var compItems = [];
+    var firstItemRef = this.state.itemsList[0];
+    var baseUnit = this.refs[firstItemRef].state.itemUnit;
+    var conversionMap = this.getConversionMap(this.state.units, baseUnit);
+    this.state.itemsList.map(function(item, i){
+      var price = self.refs[item].state.itemPrice;
+      var amount = self.refs[item].state.itemAmount;
+      var ppu = (price / amount) * conversionMap[self.refs[item].state.itemUnit];
+      var compItem = {
+        item: item,
+        name: self.refs[item].state.itemName,
+        price: self.refs[item].state.itemPrice,
+        amount: self.refs[item].state.itemAmount,
+        unit: self.refs[item].state.itemUnit,
+        ppu: ppu
+      }
+      compItems.push(compItem);
+    });
+    compItems.sort(function(a,b){
+      return a.ppu - b.ppu;
+    });
+    this.setState({
+      baseUnit: baseUnit,
+      comparing: true,
+      compItems: compItems
+    });
+  },
+  getConversionMap: function(unitType, baseUnit) {
+    var conversionMap;
+    var unitRef = fireBaseURL.child('units');
+    unitRef.child(unitType).child(baseUnit).once('value', function(data) {
+      conversionMap = data.val();
+      conversionMap[baseUnit] = 1;
+    });
+    return conversionMap;
   },
   getComparison: function() {
     var self = this;
-    return this.state.itemsList.map(function(item, i) {
-
-      if (self.refs[item]) {
+    return this.state.compItems.map(function(item, i) {
+      if (item) {
         return (
-          <div key={item}>
-            <h5>Item {item}</h5>
+          <div key={item.item}>
+            <h5><strong>Item {item.item}</strong></h5>
             <ul>
-              <li>Name: {self.refs[item].state.itemName}</li>
-              <li>Price: {self.refs[item].state.itemPrice}</li>
-              <li>Amount: {self.refs[item].state.itemAmount}</li>
-              <li>Unit: {self.refs[item].state.itemUnit}</li>
+              <li>Name: {item.name}</li>
+              <li>${item.price} for {item.amount} {item.unit}</li>
+              <li><strong>Unit price: ${item.ppu}</strong> per {self.state.baseUnit}</li>
             </ul>
           </div>
         );
