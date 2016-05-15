@@ -511,7 +511,7 @@ var Compare = React.createClass({
           <div key={item.item}>
             <h5><strong>Item {item.item}</strong></h5>
             <ul>
-              <li>Name: {item.name}</li>
+              {item.name ? <li>Name: {item.name}</li> : null}
               <li>${item.price} for {item.amount} {item.unit}</li>
               <li><strong>Unit price: ${item.ppu}</strong> per {self.state.baseUnit}</li>
             </ul>
