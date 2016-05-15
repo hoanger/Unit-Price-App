@@ -563,7 +563,7 @@ var Compare = React.createClass({
                     num={i+1}
                     units={self.state.units ? self.state.units : "blah"}
                     compare={self.state.comparing}
-                    unitGrouping={self.state.unitGrouping}
+                    unitgrouping={self.state.unitGrouping}
                   />
                 );
               })}
@@ -587,16 +587,23 @@ var CompItem = React.createClass({
   getInitialState: function() {
     return {
       itemName: '',
-      itemPrice: '',
-      itemAmount: '',
-      itemUnit: ''
+      itemPrice: '0.00',
+      itemAmount: '1',
     }
   },
-
   componentWillReceiveProps: function(nextProps) {
     if (!nextProps.compare && this.props.compare) {
-      this.setState(this.getInitialState());
+      this.setState(this.getInitialState);
     }
+    this.setState({
+      itemUnit: '',
+    })
+  },
+  clearPrice: function() {
+    this.setState({itemPrice: ''});
+  },
+  clearAmount: function() {
+    this.setState({itemAmount: ''});
   },
   handleNameChange: function(e) {
     this.setState({itemName: e.target.value});
@@ -639,11 +646,15 @@ var CompItem = React.createClass({
 
     var createUnitSelect = function() {
       return (
-        <div className="small-4 columns">
-          <label>
-            <select id="itemUnit" onChange={self.handleUnitChange}>
-              <option disabled selected> -{self.props.units}- </option>
-              {self.props.unitGrouping.map(createUnits)}
+        <div className="small-6 columns">
+          <label>{self.props.units}
+            <select
+              id="itemUnit"
+              onChange={self.handleUnitChange}
+              value={self.state.itemUnit}
+            >
+              <option disabled selected> -select- </option>
+              {self.props.unitgrouping.map(createUnits)}
             </select>
           </label>
         </div>
@@ -663,20 +674,24 @@ var CompItem = React.createClass({
                 id="itemPrice"
                 placeholder="Price"
                 value={this.state.itemPrice}
+                onFocus={this.clearPrice}
                 onChange={this.handlePriceChange}
               />
             </div>
             <div className="row">
-              <div className="small-8 columns">
-                <input
-                  type="number"
-                  aria-describedby="amountHelpText"
-                  id="itemAmount"
-                  placeholder="Amount"
-                  value={this.state.itemAmount}
-                  onChange={this.handleAmountChange}
-                />
-                <p className="help-text" id="amountHelpText">{helpText()}</p>
+              <div className="small-6 columns">
+                <label>Amount
+                  <input
+                    type="number"
+                    aria-describedby="amountHelpText"
+                    id="itemAmount"
+                    placeholder="Amount"
+                    value={this.state.itemAmount}
+                    onFocus={this.clearAmount}
+                    onChange={this.handleAmountChange}
+                  />
+                  <p className="help-text" id="amountHelpText">{helpText()}</p>
+                </label>
               </div>
               {createUnitSelect()}
             </div>
