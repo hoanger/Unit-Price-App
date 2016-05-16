@@ -470,38 +470,64 @@ var Compare = React.createClass({
     var compItems = [];
     var firstItemRef = this.state.itemsList[0];
     var baseUnit = this.refs[firstItemRef].state.itemUnit;
-    var conversionMap = this.getConversionMap(this.state.units, baseUnit);
-    this.state.itemsList.map(function(item, i){
-      var price = self.refs[item].state.itemPrice;
-      var amount = self.refs[item].state.itemAmount;
-      var ppu = (price / amount) * conversionMap[self.refs[item].state.itemUnit];
-      var compItem = {
-        item: item,
-        name: self.refs[item].state.itemName,
-        price: self.refs[item].state.itemPrice,
-        amount: self.refs[item].state.itemAmount,
-        unit: self.refs[item].state.itemUnit,
-        ppu: ppu
-      }
-      compItems.push(compItem);
-    });
-    compItems.sort(function(a,b){
-      return a.ppu - b.ppu;
-    });
-    this.setState({
-      baseUnit: baseUnit,
-      comparing: true,
-      compItems: compItems
-    });
+    var conversionMap;
+    var itemsOk = true;
+    if (!this.checkInvalidItem(this.refs[firstItemRef])) {
+      conversionMap = this.getConversionMap(this.state.units, baseUnit);
+      this.state.itemsList.map(function(item, i){
+        var price = self.refs[item].state.itemPrice;
+        var amount = self.refs[item].state.itemAmount;
+        var unit = self.refs[item].state.itemUnit;
+        var ppu = (price / amount) * conversionMap[self.refs[item].state.itemUnit];
+        var name = self.refs[item].state.itemName;
+        var compItem = {
+          item: item,
+          name: name,
+          price: price,
+          amount: amount,
+          unit: unit,
+          ppu: ppu
+        }
+        if (self.checkInvalidItem(self.refs[item])) {
+          itemsOk = false;
+        }
+        compItems.push(compItem);
+      });
+      compItems.sort(function(a,b){
+        return a.ppu - b.ppu;
+      });
+      this.setState({
+        baseUnit: baseUnit,
+        comparing: itemsOk,
+        compItems: compItems
+      });
+    }
+  },
+  checkInvalidItem: function(item) {
+    var isInvalid = false;
+    if (item.state.itemAmount === '0') {
+      console.log('Please select an amount for Item ' + item.props.num);
+      isInvalid = true;
+    }
+    if (!item.state.itemUnit) {
+      console.log('Please select a unit for Item ' + item.props.num + '.');
+      isInvalid = true;
+    }
+    return isInvalid;
   },
   getConversionMap: function(unitType, baseUnit) {
     var conversionMap;
     var unitRef = fireBaseURL.child('units');
-    unitRef.child(unitType).child(baseUnit).once('value', function(data) {
-      conversionMap = data.val();
-      conversionMap[baseUnit] = 1;
-    });
-    return conversionMap;
+    if (baseUnit === '') {
+      console.log('One or more items does not have a unit selected.');
+      return false;
+    } else {
+      unitRef.child(unitType).child(baseUnit).once('value', function(data) {
+        conversionMap = data.val();
+        conversionMap[baseUnit] = 1;
+      });
+      return conversionMap;
+    }
   },
   getComparison: function() {
     var self = this;
@@ -589,21 +615,33 @@ var CompItem = React.createClass({
       itemName: '',
       itemPrice: '0.00',
       itemAmount: '1',
+      itemUnit: ''
     }
   },
   componentWillReceiveProps: function(nextProps) {
     if (!nextProps.compare && this.props.compare) {
       this.setState(this.getInitialState);
     }
-    this.setState({
-      itemUnit: '',
-    })
   },
-  clearPrice: function() {
-    this.setState({itemPrice: ''});
+  clearPrice: function(e) {
+    if (e.target.value === '0.00') {
+      this.setState({itemPrice: ''});
+    }
   },
-  clearAmount: function() {
-    this.setState({itemAmount: ''});
+  clearAmount: function(e) {
+    if (e.target.value === '1') {
+      this.setState({itemAmount: ''});
+    }
+  },
+  restorePriceDefault: function(e) {
+    if (e.target.value === '') {
+      this.setState({itemPrice: '0.00'});
+    }
+  },
+  restoreAmountDefault: function(e) {
+    if (e.target.value === '') {
+      this.setState({itemAmount: '1'});
+    }
   },
   handleNameChange: function(e) {
     this.setState({itemName: e.target.value});
@@ -652,6 +690,7 @@ var CompItem = React.createClass({
               id="itemUnit"
               onChange={self.handleUnitChange}
               value={self.state.itemUnit}
+              required
             >
               <option disabled selected> -select- </option>
               {self.props.unitgrouping.map(createUnits)}
@@ -679,6 +718,7 @@ var CompItem = React.createClass({
                       min="0.00"
                       value={this.state.itemPrice}
                       onFocus={this.clearPrice}
+                      onBlur={this.restorePriceDefault}
                       onChange={this.handlePriceChange}
                     />
                   </div>
@@ -694,6 +734,7 @@ var CompItem = React.createClass({
                     min="0"
                     value={this.state.itemAmount}
                     onFocus={this.clearAmount}
+                    onBlur={this.restoreAmountDefault}
                     onChange={this.handleAmountChange}
                   />
                   <p className="help-text" id="amountHelpText">{helpText()}</p>
