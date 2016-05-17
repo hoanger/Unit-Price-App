@@ -127,17 +127,9 @@ var LoginForm = React.createClass({
   getInitialState: function() {
     return {loginName: '', password: ''};
   },
-  /**
-  * @description Synchronize form field with state
-  * @param {object} e - onChange event object
-  */
   handleLoginChange: function(e) {
     this.setState({loginName: e.target.value});
   },
-  /**
-  * @description Synchronize form field with state
-  * @param {object} e - onChange event object
-  */
   handlePassChange: function(e) {
     this.setState({password: e.target.value});
   },
@@ -207,38 +199,18 @@ var CreateAcct = React.createClass({
       username: ''
     };
   },
-  /**
-  * @description Synchronize form field with state
-  * @param {object} e - onChange event object
-  */
   handleEmailChange: function(e) {
     this.setState({email: e.target.value});
   },
-  /**
-  * @description Synchronize form field with state
-  * @param {object} e - onChange event object
-  */
   handlePassChange: function(e) {
     this.setState({password: e.target.value});
   },
-  /**
-  * @description Synchronize form field with state
-  * @param {object} e - onChange event object
-  */
   handlePassChange2: function(e) {
     this.setState({password2: e.target.value});
   },
-  /**
-  * @description Synchronize form field with state
-  * @param {object} e - onChange event object
-  */
   handleUserChange: function(e) {
     this.setState({username: e.target.value});
   },
-  /**
-  * @description Attempt to create user with current state
-  * @param {object} e - onClick event object
-  */
   handleSubmit: function(e) {
     e.preventDefault();
     var self = this;
@@ -433,6 +405,10 @@ var Compare = React.createClass({
     this.bindAsArray(weightRef, 'weight');
     this.bindAsArray(volumeRef, 'volume');
   },
+  /**
+  * @description Set array of units from database based on type and save to state
+  * @param {string} unitType - unit category
+  */
   setUnits: function(unitType) {
     var unitArr = [];
     switch (unitType) {
@@ -449,9 +425,17 @@ var Compare = React.createClass({
     }
     this.setState({unitGrouping: unitArr});
   },
-  getKey: function(item, index) {
+  /**
+  * @description Return the item at the '.key' key of an object
+  * @param {object} item - an object
+  * @returns {string} the value of the object at '.key'
+  */
+  getKey: function(item) {
     return item['.key'];
   },
+  /**
+  * @description Calculate price per unit of all CompItems and sort by ascending unit price
+  */
   compareItems: function() {
     var self = this;
     var compItems = [];
@@ -490,6 +474,11 @@ var Compare = React.createClass({
       });
     }
   },
+  /**
+  * @description Check if an item has enough info to do comparison
+  * @param {object} item - a React component object
+  * @returns {boolean} true if invalid amount or unit is selected, false otherwise
+  */
   checkInvalidItem: function(item) {
     var isInvalid = false;
     if (item.state.itemAmount === '0') {
@@ -502,6 +491,12 @@ var Compare = React.createClass({
     }
     return isInvalid;
   },
+  /**
+  * @description Get unit conversion map of specific unit
+  * @param {string} unitType - name of the unit type reference in database
+  * @param {string} baseUnit - name of the base unit reference in database
+  * @returns {object} object with multipliers for each unit conversion from baseunit
+  */
   getConversionMap: function(unitType, baseUnit) {
     var conversionMap;
     var unitRef = fireBaseURL.child('units');
@@ -516,6 +511,10 @@ var Compare = React.createClass({
       return conversionMap;
     }
   },
+  /**
+  * @description Form DOM for item comparison
+  * @returns {JSX object} Dynamic DOM elements for the component
+  */
   getComparison: function() {
     var self = this;
     return this.state.compItems.map(function(item, i) {
