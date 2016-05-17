@@ -24,12 +24,10 @@ var UnitPriceApp = React.createClass ({
     }
   },
   componentDidMount: function() {
-    //console.log("UnitPriceApp DidMount");
     /* Listen for Firebase authentication state changes and pass data through callback */
     fireBaseURL.onAuth(this.setAuth);
   },
   componentDidUpdate: function() {
-    //console.log("UnitPriceApp DidUpdate");
     var authState = this.props.isLoggedIn;
     /* Record login time and log into main page if authenticated, show login screen otherwise */
     if (authState) {
@@ -375,34 +373,23 @@ var MainMenu = React.createClass({
   getInitialState: function() {
     return {appComponent: 'compare'};
   },
-  componentDidUpdate: function() {
-    var self = this;
-    var JSXitem
-    switch (self.state.appComponent) {
-      case 'compare':
-      default:
-        JSXitem = <Compare userAuth={self.props.userAuth} />;
-        break;
-      case 'priceItem':
-        JSXitem = <PriceApp userAuth={self.props.userAuth} />
-        break;
-      case 'account':
-        JSXitem = <UserPrefs userAuth={self.props.userAuth} />
-        break;
-    }
-    ReactDOM.render(JSXitem, document.getElementById('page-holder'));
+  componentWillMount: function() {
+    ReactDOM.render(<Compare userAuth={this.props.userAuth} />, document.getElementById('page-holder'));
   },
   toCompare: function(e) {
     e.preventDefault();
     this.setState({appComponent: 'compare'});
+    ReactDOM.render(<Compare userAuth={this.props.userAuth} />, document.getElementById('page-holder'));
   },
   toPriceApp: function(e) {
     e.preventDefault();
     this.setState({appComponent: 'priceItem'});
+    ReactDOM.render(<PriceApp userAuth={this.props.userAuth} />, document.getElementById('page-holder'));
   },
   toUserPrefs: function(e) {
     e.preventDefault();
     this.setState({appComponent: 'account'});
+    ReactDOM.render(<UserPrefs userAuth={this.props.userAuth} />, document.getElementById('page-holder'));
   },
   render: function() {
     return (
