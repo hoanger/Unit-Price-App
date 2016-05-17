@@ -449,7 +449,8 @@ var Compare = React.createClass({
         var price = self.refs[item].state.itemPrice;
         var amount = self.refs[item].state.itemAmount;
         var unit = self.refs[item].state.itemUnit;
-        var ppu = (price / amount) * conversionMap[self.refs[item].state.itemUnit];
+        var unroundedPPU = (price / amount) * conversionMap[self.refs[item].state.itemUnit];
+        var ppu = Math.round(unroundedPPU*100)/100
         var name = self.refs[item].state.itemName;
         var compItem = {
           item: item,
