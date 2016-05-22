@@ -16,7 +16,7 @@ var UnitPriceApp = React.createClass ({
       JSXitem: {
         login: (
           <div className="row">
-            <div id="appContainer" className="medium-6 medium-centered large-4 large-centered columns" />
+            <div id="appContainer" className="col-sm-6 col-md-4 col-sm-offset-3 col-md-offset-4" />
           </div>
           ),
         app: <div><div id="appContainer" /><div id="page-holder" /></div>
@@ -34,7 +34,7 @@ var UnitPriceApp = React.createClass ({
       let userRef = fireBaseURL.child('users');
       userRef.child(authState.uid).update({lastLoggedIn: Firebase.ServerValue.TIMESTAMP});
       ReactDOM.render(
-        <div className="row column"><h1>Welcome</h1></div>,
+        <div className="row"><h1>Welcome</h1></div>,
         document.getElementById('page-holder')
       );
       ReactDOM.render(
@@ -110,7 +110,7 @@ var LoginBox = React.createClass({
         <div id="login-box">
           <LoginForm />
           <div id="createBtnContainer">
-            <p><a onClick={this.handleCreateAcct}  type="button" id="createAcctBtn" className="button expanded">Create a New Account</a></p>
+            <p><a onClick={this.handleCreateAcct}  type="button" id="createAcctBtn" className="btn btn-default btn-block">Create a New Account</a></p>
           </div>
         </div>
       )
@@ -159,28 +159,32 @@ var LoginForm = React.createClass({
       <form>
         <div className="user-form">
           <h4 className="text-center">Log in to UnitPrice</h4>
-          <label>Email
+          <div className="form-group">
+            <label for="loginName">Email</label>
             <input
               type="email"
+              className="form-control"
               id="loginName"
               autoFocus
               placeholder="email@someplace.com"
               value={this.state.loginName}
               onChange={this.handleLoginChange}
             />
-          </label>
-          <label>Password
+          </div>
+          <div className="form-group">
+            <label for="pswrd">Password</label>
             <input
               type="password"
+              className="form-control"
               id="pswrd"
               placeholder="Shhh! It's a secret"
               value={this.state.password}
               onChange={this.handlePassChange}
             />
-          </label>
-            <p><a onClick={this.handleSubmit} type="submit" className="button expanded">Log In</a></p>
           </div>
-        </form>
+          <a onClick={this.handleSubmit} type="submit" className="btn btn-primary btn-block">Log In</a>
+        </div>
+      </form>
     );
   }
 });
@@ -291,44 +295,52 @@ var CreateAcct = React.createClass({
       <form>
         <div className="user-form">
           <h4 className="text-center">Create your Account</h4>
-            <label>Choose a Username
-              <input
-                type="text"
-                id="username"
-                autoFocus
-                placeholder="Kickass code name"
-                value={this.state.username}
-                onChange={this.handleUserChange}
-              />
-            </label>
-            <label>Email
-              <input
-                type="email"
-                id="email"
-                placeholder="email@someplace.com"
-                value={this.state.email}
-                onChange={this.handleEmailChange}
-              />
-            </label>
-            <label>Password
-              <input
-                type="password"
-                id="pswrd"
-                placeholder="Make it hard to guess"
-                value={this.state.password}
-                onChange={this.handlePassChange}
-              />
-            </label>
-            <label>Confirm Password
-              <input
-                type="password"
-                id="pswrd"
-                placeholder="but you still need to remember it"
-                value={this.state.password2}
-                onChange={this.handlePassChange2}
-              />
-            </label>
-            <p><a onClick={this.handleSubmit} type="submit" className="button expanded">Create Account and Login</a></p>
+          <div className="form-group">
+            <label for="username">Choose a Username</label>
+            <input
+              type="text"
+              className="form-control"
+              id="username"
+              autoFocus
+              placeholder="Kickass code name"
+              value={this.state.username}
+              onChange={this.handleUserChange}
+            />
+           </div>
+           <div className="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              className="form-control"
+              id="email"
+              placeholder="email@someplace.com"
+              value={this.state.email}
+              onChange={this.handleEmailChange}
+            />
+          </div>
+          <div className="form-group">
+            <label for="pswrd">Password</label>
+            <input
+              type="password"
+              className="form-control"
+              id="pswrd"
+              placeholder="Make it hard to guess"
+              value={this.state.password}
+              onChange={this.handlePassChange}
+            />
+          </div>
+          <div className="form-group">
+            <label for="pswrd2">Confirm Password</label>
+            <input
+              type="password"
+              className="form-control"
+              id="pswrd2"
+              placeholder="but you still need to remember it"
+              value={this.state.password2}
+              onChange={this.handlePassChange2}
+            />
+          </div>
+          <a onClick={this.handleSubmit} type="submit" className="btn btn-primary btn-block">Create Account and Login</a>
         </div>
       </form>
     )
@@ -366,12 +378,12 @@ var MainMenu = React.createClass({
   render: function() {
     return (
       <div>
-        <div className="mainMenu row">
-          <div className="menu-centered">
-            <ul className="menu">
-              <li><a href="" onClick={this.toCompare}><i className="fi-pricetag-multiple" /><span>Compare</span></a></li>
-              <li><a href="" onClick={this.toPriceApp}><i className="fi-bookmark" /><span>Price it!</span></a></li>
-              <li><a href="" onClick={this.toUserPrefs}><i className="fi-torso" /><span>Account</span></a></li>
+        <div className="mainMenu">
+          <div className="menu-centered row">
+            <ul className="nav nav-pills">
+              <li role="navigation"><a href="" onClick={this.toCompare}><span>Compare</span></a></li>
+              <li role="navigation"><a href="" onClick={this.toPriceApp}><span>Price it!</span></a></li>
+              <li role="navigation"><a href="" onClick={this.toUserPrefs}><span>Account</span></a></li>
             </ul>
           </div>
         </div>
@@ -450,7 +462,7 @@ var Compare = React.createClass({
         var amount = self.refs[item].state.itemAmount;
         var unit = self.refs[item].state.itemUnit;
         var unroundedPPU = (price / amount) * conversionMap[self.refs[item].state.itemUnit];
-        var ppu = Math.round(unroundedPPU*100)/100
+        var ppu = Math.round(unroundedPPU*10000)/10000
         var name = self.refs[item].state.itemName;
         var compItem = {
           item: item,
@@ -552,36 +564,38 @@ var Compare = React.createClass({
     var self = this;
     return (
       <div>
-        <div className="row align-center" style={this.state.comparing ? null : {display: 'none'}}>
-          <div className="column">
-            <h4>Comparing items by {self.state.units ? self.state.units : null}</h4>
+        <div className="row" style={this.state.comparing ? null : {display: 'none'}}>
+          <div className="col-sm-6">
+            <h3>Comparing items by {self.state.units ? self.state.units : null}</h3>
             {self.getComparison()}
-            <a onClick={this.resetCompare} type="submit" className="button expanded">Reset</a>
+            <button onClick={this.resetCompare} type="submit" className="btn btn-default btn-block">Reset</button>
           </div>
         </div>
-        <div className="row align-center" style={this.state.comparing ? {display: 'none'} : null}>
-          <div className="column">
-            <h4>Compare Items</h4>
-            <div className="button-group expanded">
-              <a onClick={this.weightUnits} className="success button">Weight</a>
-              <a onClick={this.volumeUnits} className="button">Volume</a>
-              <a onClick={this.numberUnits} className="warning button">Number</a>
+        <div className="row" style={this.state.comparing ? {display: 'none'} : null}>
+          <div className="col-xs-12">
+            <h3>Compare Items</h3>
+            <div className="btn-group btn-group-lg btn-group-justified" role="group" aria-label="unit type">
+              <a type="button" onClick={this.weightUnits} className="btn btn-primary">Weight</a>
+              <a type="button" onClick={this.volumeUnits} className="btn btn-info">Volume</a>
+              <a type="button" onClick={this.numberUnits} className="btn btn-primary">Number</a>
             </div>
-            <div className="row" style={this.state.units ? null : {display: 'none'}}>
-              {this.state.itemsList.map(function(item, i) {
-                return (
-                  <CompItem
-                    key={i}
-                    ref={item}
-                    num={i+1}
-                    units={self.state.units ? self.state.units : "blah"}
-                    compare={self.state.comparing}
-                    unitgrouping={self.state.unitGrouping}
-                  />
-                );
-              })}
-              <div className="columns">
-                <a onClick={this.compareItems} type="submit" className="button expanded">Compare!</a>
+            <div>
+              <div className="row" style={this.state.units ? null : {display: 'none'}}>
+                {this.state.itemsList.map(function(item, i) {
+                  return (
+                    <CompItem
+                      key={i}
+                      ref={item}
+                      num={i+1}
+                      units={self.state.units ? self.state.units : "blah"}
+                      compare={self.state.comparing}
+                      unitgrouping={self.state.unitGrouping}
+                    />
+                  );
+                })}
+              </div>
+              <div className="col-xs-12" style={this.state.units ? null : {display: 'none'}}>
+                <a onClick={this.compareItems} type="submit" className="btn btn-block btn-primary">Compare!</a>
               </div>
             </div>
           </div>
@@ -671,9 +685,10 @@ var CompItem = React.createClass({
 
     var createUnitSelect = function() {
       return (
-        <div className="small-4 columns">
-          <label>{self.props.units}
+        <div className="col-xs-4 col-md-offset-0 form-group">
+          <label for="itemUnit" className="text-capitalize">{self.props.units}</label>
             <select
+              className="form-control"
               id="itemUnit"
               onChange={self.handleUnitChange}
               value={self.state.itemUnit}
@@ -682,23 +697,23 @@ var CompItem = React.createClass({
               <option disabled selected> -select- </option>
               {self.props.unitgrouping.map(createUnits)}
             </select>
-          </label>
         </div>
       )
     };
 
     return (
-      <div className="medium-6 columns align-center">
+      <form className="col-sm-6">
         <div>
-          <div className="user-form compare-form column">
+          <div className="user-form compare-form row">
             <h4>Item {this.props.num}</h4>
             <div className="row">
-              <div className="small-5 columns">
-              <label>Price
+              <div className="col-xs-12">
+                <div className="col-xs-5 col-md-offset-0 form-group">
+                <label for itemPrice>Price</label>
                   <div className="input-group">
-                    <span className="input-group-label">$</span>
+                    <span className="input-group-addon">$</span>
                     <input
-                      className="input-group-field"
+                      className="form-control"
                       type="number"
                       id="itemPrice"
                       placeholder="Price"
@@ -709,38 +724,37 @@ var CompItem = React.createClass({
                       onChange={this.handlePriceChange}
                     />
                   </div>
-                </label>
-              </div>
-              <div className="small-3 columns">
-                <label>Amount
+                </div>
+                <div className="col-xs-3 col-md-offset-0 form-group">
+                  <label for="itemAmount">Amount</label>
                   <input
+                    className="form-control"
                     type="number"
-                    aria-describedby="amountHelpText"
                     id="itemAmount"
-                    placeholder="Amount"
-                    min="0"
+                    min="1"
                     value={this.state.itemAmount}
                     onFocus={this.clearAmount}
                     onBlur={this.restoreAmountDefault}
                     onChange={this.handleAmountChange}
                   />
-                  <p className="help-text" id="amountHelpText">{helpText()}</p>
-                </label>
+                </div>
+                {createUnitSelect()}
               </div>
-              {createUnitSelect()}
             </div>
-            <label>Item name
+            <div className="col-xs-12 form-group">
+              <label for="itemName">Item name</label>
               <input
+                className="form-control"
                 type="text"
                 id="itemName"
                 placeholder="Optional"
                 value={this.state.itemName}
                 onChange={this.handleNameChange}
               />
-            </label>
+            </div>
           </div>
         </div>
-      </div>
+      </form>
     )
   }
 });
@@ -754,7 +768,7 @@ var PriceApp = React.createClass({
   render: function() {
     return (
       <div className="row align-center">
-        <div className="column">Main app here</div>
+        <div className="col-xs-12">Main app here</div>
       </div>
     )
   }
@@ -770,7 +784,7 @@ var UserPrefs = React.createClass({
       <div className="row align-center">
         <ChangePass userAuth={this.props.userAuth} />
         <Logout userAuth={this.props.userAuth} />
-        <div className="user-item medium-6 large-4 columns" />
+        <div className="user-item col-sm-6 col-md-4" />
       </div>
     )
   }
@@ -791,11 +805,11 @@ var Logout = React.createClass({
   },
   render: function() {
     return (
-      <div id="logout-container" className="user-item medium-6 large-4 columns">
+      <div id="logout-container" className="user-item col-sm-6 col-md-4">
         <form>
           <div className="user-form">
             <h4 className="text-center">Logout this user</h4>
-            <p><a href='' onClick={this.logoutCurrentUser} className="button expanded">Logout</a></p>
+            <a href='' onClick={this.logoutCurrentUser} className="btn btn-primary btn-block">Logout</a>
           </div>
         </form>
       </div>
@@ -873,38 +887,45 @@ var ChangePass = React.createClass({
   },
   render: function() {
     return (
-      <div id="change-pass-container" className="user-item medium-6 large-4 columns">
+      <div id="change-pass-container" className="user-item col-sm-6 col-md-4">
         <form>
           <div className="user-form">
             <h4 className="text-center">Change your password</h4>
-            <label>Old password
+            <div className="form-group">
+              <label for="oldPswrd">Old password</label>
               <input
+                className="form-control"
                 type="password"
                 id="oldPswrd"
                 autoFocus
                 value={this.state.oldPass}
                 onChange={this.handleOldPass}
                 />
-            </label>
-            <label>New Password
+            </div>
+            <div className="form-group">
+              <label>New Password</label>
               <input
-              type="password"
-              id="newPswrd"
-              placeholder="Enter your new password"
-              value={this.state.newPass}
-              onChange={this.handlePassChange}
-            />
-            </label>
-            <label>
+                className="form-control"
+                type="password"
+                id="newPswrd"
+                placeholder="Enter your new password"
+                value={this.state.newPass}
+                onChange={this.handlePassChange}
+              />
+            </div>
+            <div className="form-group">
               <input
+                className="form-control"
                 type="password"
                 id="oldPswrd"
                 placeholder="Confirm new password"
                 value={this.state.newPass2}
                 onChange={this.handlePass2Change}
               />
-            </label>
-            <p><a onClick={this.handleSubmit} type="submit" className="button expanded">Change Password</a></p>
+            </div>
+            <div className="form-group">
+              <button onClick={this.handleSubmit} type="submit" className="btn btn-primary btn-block">Change Password</button>
+            </div>
           </div>
         </form>
       </div>

@@ -1,4 +1,4 @@
-#login-box, #page-holder {
+#login-box {
   padding-top: 1rem;
 }
 
@@ -7,12 +7,7 @@
 }
 
 #createAcctBtn {
-	background-color: #3f647b;
-	margin-top: 1rem;
-}
-
-.nav-a {
-	margin-top: 1rem;
+  margin-top: 1rem;
 }
 
 .user-form {
@@ -21,15 +16,18 @@
   border-radius: 3px;
 }
 .compare-form {
-	margin-bottom: 1rem;
+  margin: 1rem 0 1rem;
 }
 
 .menu-centered {
-	padding: 0.5rem 0 0.5rem;
-	background-color: #dbe5ea;
-	border-bottom: 1px;
+  background-color: #dbe5ea;
+  border-bottom: 1px;
 }
 
 .user-item {
 	margin-bottom: 1rem;
+}
+
+.nav {
+  font-size: 2rem;
 }
