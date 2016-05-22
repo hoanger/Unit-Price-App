@@ -102,15 +102,17 @@ var LoginBox = React.createClass({
       JSXitem = (
         <div id="login-box">
           <CreateAcct />
-          <p className="text-center nav-a"><a onClick={this.backToLogin}>Cancel</a></p>
+          <div className="free-btn-container">
+            <a onClick={this.backToLogin} className="btn btn-default btn-block free-btn">Cancel</a>
+          </div>
         </div>
       )
     } else {
       JSXitem = (
         <div id="login-box">
           <LoginForm />
-          <div id="createBtnContainer">
-            <p><a onClick={this.handleCreateAcct}  type="button" id="createAcctBtn" className="btn btn-default btn-block">Create a New Account</a></p>
+          <div className="free-btn-container">
+            <a onClick={this.handleCreateAcct}  type="button" className="btn btn-default btn-block free-btn">Create a New Account</a>
           </div>
         </div>
       )

@@ -1,12 +1,15 @@
+#content {
+  padding-bottom: 2rem;
+}
 #login-box {
   padding-top: 1rem;
 }
 
-#createBtnContainer {
+.free-btn-container {
   padding: 0 1rem 0 1rem;
 }
 
-#createAcctBtn {
+.free-btn {
   margin-top: 1rem;
 }
 
