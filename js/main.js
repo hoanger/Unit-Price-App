@@ -535,12 +535,14 @@ var Compare = React.createClass({
     return this.state.compItems.map(function(item, i) {
       if (item) {
         return (
-          <div key={item.item}>
-            <h5><strong>Item {item.item}</strong></h5>
-            <ul>
-              {item.name ? <li>Name: {item.name}</li> : null}
-              <li>${item.price} for {item.amount} {item.unit}</li>
-              <li><strong>Unit price: ${item.ppu}</strong> per {self.state.baseUnit}</li>
+          <div className="panel panel-info" key={item.item}>
+            <div className="panel-heading">
+              <h4 className="panel-title">Item {item.item}</h4>
+            </div>
+            <ul className="list-group">
+              {item.name ? <li className="list-group-item">Name: {item.name}</li> : null}
+              <li className="list-group-item"><h4><strong>Unit price: ${item.ppu}</strong> per {self.state.baseUnit}</h4></li>
+              <li className="list-group-item">${item.price} for {item.amount} {item.unit}</li>
             </ul>
           </div>
         );
@@ -568,7 +570,7 @@ var Compare = React.createClass({
       <div>
         <div className="row" style={this.state.comparing ? null : {display: 'none'}}>
           <div className="col-sm-6">
-            <h3>Comparing items by {self.state.units ? self.state.units : null}</h3>
+            <h3>Comparing by {self.state.units ? self.state.units : null}</h3>
             {self.getComparison()}
             <button onClick={this.resetCompare} type="submit" className="btn btn-default btn-block">Reset</button>
           </div>
@@ -596,7 +598,7 @@ var Compare = React.createClass({
                   );
                 })}
               </div>
-              <div className="col-xs-12" style={this.state.units ? null : {display: 'none'}}>
+              <div className="col-xs-12 col-md-8 col-md-offset-2" style={this.state.units ? null : {display: 'none'}}>
                 <a onClick={this.compareItems} type="submit" className="btn btn-block btn-primary">Compare!</a>
               </div>
             </div>
@@ -687,18 +689,19 @@ var CompItem = React.createClass({
 
     var createUnitSelect = function() {
       return (
-        <div className="col-xs-4 col-md-offset-0 form-group">
-          <label for="itemUnit" className="text-capitalize">{self.props.units}</label>
+        <div className="col-xs-5 form-group">
+          <label for="itemUnit">Unit</label>
             <select
               className="form-control"
               id="itemUnit"
               onChange={self.handleUnitChange}
               value={self.state.itemUnit}
-              required
+              aria-describedby="helpAmount"
             >
-              <option disabled selected> -select- </option>
+              <option disabled selected> - </option>
               {self.props.unitgrouping.map(createUnits)}
             </select>
+            <span id="helpAmount" class="help-block"><h6>{helpText()}</h6></span>
         </div>
       )
     };
@@ -710,24 +713,21 @@ var CompItem = React.createClass({
             <h4>Item {this.props.num}</h4>
             <div className="row">
               <div className="col-xs-12">
-                <div className="col-xs-5 col-md-offset-0 form-group">
-                <label for itemPrice>Price</label>
-                  <div className="input-group">
-                    <span className="input-group-addon">$</span>
-                    <input
-                      className="form-control"
-                      type="number"
-                      id="itemPrice"
-                      placeholder="Price"
-                      min="0.00"
-                      value={this.state.itemPrice}
-                      onFocus={this.clearPrice}
-                      onBlur={this.restorePriceDefault}
-                      onChange={this.handlePriceChange}
-                    />
-                  </div>
+                <div className="col-xs-4 form-group">
+                <label for itemPrice>Price ($)</label>
+                  <input
+                    className="form-control"
+                    type="number"
+                    id="itemPrice"
+                    placeholder="Price"
+                    min="0.00"
+                    value={this.state.itemPrice}
+                    onFocus={this.clearPrice}
+                    onBlur={this.restorePriceDefault}
+                    onChange={this.handlePriceChange}
+                  />
                 </div>
-                <div className="col-xs-3 col-md-offset-0 form-group">
+                <div className="col-xs-3 form-group">
                   <label for="itemAmount">Amount</label>
                   <input
                     className="form-control"
@@ -783,10 +783,15 @@ var PriceApp = React.createClass({
 var UserPrefs = React.createClass({
   render: function() {
     return (
-      <div className="row align-center">
-        <ChangePass userAuth={this.props.userAuth} />
-        <Logout userAuth={this.props.userAuth} />
-        <div className="user-item col-sm-6 col-md-4" />
+      <div className="col-xs-12">
+        <div className="row">
+          <h3>My Account</h3>
+          <div className="row">
+            <ChangePass userAuth={this.props.userAuth} />
+            <Logout userAuth={this.props.userAuth} />
+            <div className="user-item col-sm-6 col-md-4" />
+          </div>
+        </div>
       </div>
     )
   }
