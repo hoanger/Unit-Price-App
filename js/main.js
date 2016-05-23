@@ -31,7 +31,7 @@ var UnitPriceApp = React.createClass ({
     var authState = this.props.isLoggedIn;
     /* Record login time and log into main page if authenticated, show login screen otherwise */
     if (authState) {
-      let userRef = fireBaseURL.child('users');
+      var userRef = fireBaseURL.child('users');
       userRef.child(authState.uid).update({lastLoggedIn: Firebase.ServerValue.TIMESTAMP});
       ReactDOM.render(
         <div className="row"><h1>Welcome</h1></div>,
@@ -54,9 +54,13 @@ var UnitPriceApp = React.createClass ({
   * @param authData {object} authData - Firebase user authentication info
   */
   setAuth: function(authData) {
+    var authObj = {
+      uid: authData.uid,
+      provider: authData.provider
+    };
     ReactDOM.unmountComponentAtNode(document.getElementById('appContainer'));
     ReactDOM.render(
-      <UnitPriceApp isLoggedIn={authData} />,
+      <UnitPriceApp isLoggedIn={authObj} />,
       document.getElementById('content')
     );
   },
@@ -541,7 +545,7 @@ var Compare = React.createClass({
             </div>
             <ul className="list-group">
               {item.name ? <li className="list-group-item">Name: {item.name}</li> : null}
-              <li className="list-group-item"><h4><strong>Unit price: ${item.ppu}</strong> per {self.state.baseUnit}</h4></li>
+              <li className="list-group-item"><h4><strong>${item.ppu}</strong> per {self.state.baseUnit}</h4></li>
               <li className="list-group-item">${item.price} for {item.amount} {item.unit}</li>
             </ul>
           </div>
@@ -769,8 +773,10 @@ var PriceApp = React.createClass({
   mixins: [ReactFireMixin],
   render: function() {
     return (
-      <div className="row align-center">
-        <div className="col-xs-12">Main app here</div>
+      <div className="col-xs-12 align-center">
+        <div className="row">
+          <h3>Record a price</h3>
+        </div>
       </div>
     )
   }
