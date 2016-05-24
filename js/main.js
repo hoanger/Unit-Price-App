@@ -613,12 +613,8 @@ var Compare = React.createClass({
   }
 });
 
-/********************************************
-* Component
-* @description Quick Compare item
-*********************************************/
-var CompItem = React.createClass({
-  mixins: [ReactFireMixin],
+/* Methods used in both Compare and Price componenets */
+var PricedItemMixin = {
   getInitialState: function() {
     return {
       itemName: '',
@@ -663,7 +659,16 @@ var CompItem = React.createClass({
   },
   handleUnitChange: function(e) {
     this.setState({itemUnit: e.target.value});
-  },
+  }
+};
+
+
+/********************************************
+* Component
+* @description Quick Compare item
+*********************************************/
+var CompItem = React.createClass({
+  mixins: [ReactFireMixin, PricedItemMixin],
   render: function() {
     var self = this;
 
