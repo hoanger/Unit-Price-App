@@ -54,10 +54,13 @@ var UnitPriceApp = React.createClass ({
   * @param authData {object} authData - Firebase user authentication info
   */
   setAuth: function(authData) {
-    var authObj = {
-      uid: authData.uid,
-      provider: authData.provider
-    };
+    var authObj = null;
+    if (authData) {
+      authObj = {
+        uid: authData.uid,
+        provider: authData.provider
+      };
+    }
     ReactDOM.unmountComponentAtNode(document.getElementById('appContainer'));
     ReactDOM.render(
       <UnitPriceApp isLoggedIn={authObj} />,
@@ -622,12 +625,23 @@ var Compare = React.createClass({
 * @description Main pricing page
 *********************************************/
 var PriceApp = React.createClass({
-  mixins: [ReactFireMixin],
+  mixins: [ReactFireMixin, PricePageMixin],
+  getInitialState: function () {
+    return {
+      units: null,
+      unitGrouping: []
+    };
+  },
   render: function() {
+    var self = this;
     return (
       <div className="col-xs-12 align-center">
         <div className="row">
           <h3>Record a price</h3>
+          <PriceItem
+            units={self.state.units ? self.state.units : "blah"}
+            unitgrouping={self.state.unitGrouping}
+          />
         </div>
       </div>
     )
@@ -798,7 +812,15 @@ var CompItem = React.createClass({
 *********************************************/
 var PriceItem = React.createClass({
   mixins: [ReactFireMixin, PricedItemMixin],
+  getInitialState: function() {
+    return {
+      units: null,
+      unitGrouping: []
+    }
+  },
   render: function() {
+    return null;
+    //TODO: Build PriceItem component
 
   }
 });
