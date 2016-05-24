@@ -398,21 +398,8 @@ var MainMenu = React.createClass({
   }
 });
 
-/********************************************
-* Component
-* @description Quick Compare page
-*********************************************/
-var Compare = React.createClass({
-  mixins: [ReactFireMixin],
-  getInitialState: function() {
-    return {
-      itemsList: ['one','two'],
-      compItems: [],
-      comparing: false,
-      units: null,
-      unitGrouping: []
-    };
-  },
+/* Methods used in both Compare and PriceApp components */
+var PricePageMixin = {
   componentWillMount: function() {
     var unitRef = fireBaseURL.child('units');
     var itemsRef = unitRef.child("items");
@@ -450,6 +437,72 @@ var Compare = React.createClass({
   */
   getKey: function(item) {
     return item['.key'];
+  },
+  /**
+  * @description Check if an item has enough info to do comparison/unit price calc
+  * @param {object} item - a React component object
+  * @returns {boolean} true if invalid amount or unit is selected, false otherwise
+  */
+  checkInvalidItem: function(item) {
+    var isInvalid = false;
+    if (item.state.itemAmount === '0') {
+      console.log('Please select an amount for Item ' + item.props.num);
+      isInvalid = true;
+    }
+    if (!item.state.itemUnit) {
+      console.log('Please select a unit for Item ' + item.props.num + '.');
+      isInvalid = true;
+    }
+    return isInvalid;
+  },
+  /**
+  * @description Get unit conversion map of specific unit
+  * @param {string} unitType - name of the unit type reference in database
+  * @param {string} baseUnit - name of the base unit reference in database
+  * @returns {object} object with multipliers for each unit conversion from baseunit
+  */
+  getConversionMap: function(unitType, baseUnit) {
+    var conversionMap;
+    var unitRef = fireBaseURL.child('units');
+    if (baseUnit === '') {
+      console.log('One or more items does not have a unit selected.');
+      return false;
+    } else {
+      unitRef.child(unitType).child(baseUnit).once('value', function(data) {
+        conversionMap = data.val();
+        conversionMap[baseUnit] = 1;
+      });
+      return conversionMap;
+    }
+  },
+  weightUnits: function() {
+    this.setState({units: 'weight'});
+    this.setUnits('weight');
+  },
+  volumeUnits: function() {
+    this.setState({units: 'volume'});
+    this.setUnits('volume');
+  },
+  numberUnits: function() {
+    this.setState({units: 'items'});
+    this.setUnits('items');
+  }
+};
+
+/********************************************
+* Component
+* @description Quick Compare page
+*********************************************/
+var Compare = React.createClass({
+  mixins: [ReactFireMixin, PricePageMixin],
+  getInitialState: function() {
+    return {
+      itemsList: ['one','two'],
+      compItems: [],
+      comparing: false,
+      units: null,
+      unitGrouping: []
+    };
   },
   /**
   * @description Calculate price per unit of all CompItems and sort by ascending unit price
@@ -494,43 +547,6 @@ var Compare = React.createClass({
     }
   },
   /**
-  * @description Check if an item has enough info to do comparison
-  * @param {object} item - a React component object
-  * @returns {boolean} true if invalid amount or unit is selected, false otherwise
-  */
-  checkInvalidItem: function(item) {
-    var isInvalid = false;
-    if (item.state.itemAmount === '0') {
-      console.log('Please select an amount for Item ' + item.props.num);
-      isInvalid = true;
-    }
-    if (!item.state.itemUnit) {
-      console.log('Please select a unit for Item ' + item.props.num + '.');
-      isInvalid = true;
-    }
-    return isInvalid;
-  },
-  /**
-  * @description Get unit conversion map of specific unit
-  * @param {string} unitType - name of the unit type reference in database
-  * @param {string} baseUnit - name of the base unit reference in database
-  * @returns {object} object with multipliers for each unit conversion from baseunit
-  */
-  getConversionMap: function(unitType, baseUnit) {
-    var conversionMap;
-    var unitRef = fireBaseURL.child('units');
-    if (baseUnit === '') {
-      console.log('One or more items does not have a unit selected.');
-      return false;
-    } else {
-      unitRef.child(unitType).child(baseUnit).once('value', function(data) {
-        conversionMap = data.val();
-        conversionMap[baseUnit] = 1;
-      });
-      return conversionMap;
-    }
-  },
-  /**
   * @description Form DOM for item comparison
   * @returns {JSX object} Dynamic DOM elements for the component
   */
@@ -555,18 +571,6 @@ var Compare = React.createClass({
   },
   resetCompare: function() {
     this.setState(this.getInitialState());
-  },
-  weightUnits: function() {
-    this.setState({units: 'weight'});
-    this.setUnits('weight');
-  },
-  volumeUnits: function() {
-    this.setState({units: 'volume'});
-    this.setUnits('volume');
-  },
-  numberUnits: function() {
-    this.setState({units: 'items'});
-    this.setUnits('items');
   },
   render: function() {
     var self = this;
@@ -613,7 +617,25 @@ var Compare = React.createClass({
   }
 });
 
-/* Methods used in both Compare and Price componenets */
+/********************************************
+* Component
+* @description Main pricing page
+*********************************************/
+var PriceApp = React.createClass({
+  mixins: [ReactFireMixin],
+  render: function() {
+    return (
+      <div className="col-xs-12 align-center">
+        <div className="row">
+          <h3>Record a price</h3>
+        </div>
+      </div>
+    )
+  }
+});
+
+
+/* Methods used in both CompItem and PriceItem components */
 var PricedItemMixin = {
   getInitialState: function() {
     return {
@@ -772,18 +794,12 @@ var CompItem = React.createClass({
 
 /********************************************
 * Component
-* @description Main pricing page
+* @description Pricing item
 *********************************************/
-var PriceApp = React.createClass({
-  mixins: [ReactFireMixin],
+var PriceItem = React.createClass({
+  mixins: [ReactFireMixin, PricedItemMixin],
   render: function() {
-    return (
-      <div className="col-xs-12 align-center">
-        <div className="row">
-          <h3>Record a price</h3>
-        </div>
-      </div>
-    )
+
   }
 });
 
