@@ -1,7 +1,15 @@
 /*** Global variables and constants ***/
 
-const fireBaseURL = new Firebase('https://unitprice.firebaseio.com/');
-
+var config = {
+    apiKey: "AIzaSyAABdXJjCOZwuCdbztVs3CIXIdhlrvucj4",
+    authDomain: "unitprice.firebaseapp.com",
+    databaseURL: "https://unitprice.firebaseio.com"
+  };
+/* Initialize Firebase */
+firebase.initializeApp(config);
+const dataBase = firebase.database();
+const fireBaseURL = dataBase.ref();
+const auth = firebase.auth();
 /*** React components ***/
 
 /********************************************
@@ -25,14 +33,14 @@ var UnitPriceApp = React.createClass ({
   },
   componentDidMount: function() {
     /* Listen for Firebase authentication state changes and pass data through callback */
-    fireBaseURL.onAuth(this.setAuth);
+    auth.onAuthStateChanged(this.setAuth);
   },
   componentDidUpdate: function() {
     var authState = this.props.isLoggedIn;
     /* Record login time and log into main page if authenticated, show login screen otherwise */
     if (authState) {
       var userRef = fireBaseURL.child('users');
-      userRef.child(authState.uid).update({lastLoggedIn: Firebase.ServerValue.TIMESTAMP});
+      userRef.child(authState.uid).update({lastLoggedIn: firebase.database.ServerValue.TIMESTAMP});
       ReactDOM.render(
         <div className="row"><h1>Welcome</h1></div>,
         document.getElementById('page-holder')
@@ -41,7 +49,6 @@ var UnitPriceApp = React.createClass ({
         <MainMenu userAuth={authState} />,
         document.getElementById('appContainer')
       );
-
     } else {
       ReactDOM.render(
         <LoginBox />,
@@ -51,19 +58,19 @@ var UnitPriceApp = React.createClass ({
   },
   /**
   * @description Callback to update props with
-  * @param authData {object} authData - Firebase user authentication info
+  * @param user {object} user - Firebase user authentication info
   */
-  setAuth: function(authData) {
-    var authObj = null;
-    if (authData) {
-      authObj = {
-        uid: authData.uid,
-        provider: authData.provider
+  setAuth: function(user) {
+    var userObj = null;
+    if (user) {
+      userObj = {
+        uid: user.uid,
+        provider: user.providerId
       };
     }
     ReactDOM.unmountComponentAtNode(document.getElementById('appContainer'));
     ReactDOM.render(
-      <UnitPriceApp isLoggedIn={authObj} />,
+      <UnitPriceApp isLoggedIn={userObj} />,
       document.getElementById('content')
     );
   },
@@ -151,17 +158,13 @@ var LoginForm = React.createClass({
     var self = this;
     var userN = this.state.loginName.trim();
     var pass = this.state.password;
-    fireBaseURL.authWithPassword({
-      email: userN,
-      password: pass
-    }, function(error, authData){
-      if (!error) {
-        console.log("Authenticated successfully with payload:", authData);
-      } else {
-        self.setState({loginName: '', password: ''});
-        console.log("Login Failed!", error);
-      }
-    })
+
+    auth.signInWithEmailAndPassword(userN, pass).then(function(result){
+      console.log("User authenticated:", result.uid);
+    }).catch(function(error){
+      self.setState({loginName: '', password: ''});
+      console.log("Login Failed!", error.message);
+    });
   },
   render: function() {
     return (
@@ -240,35 +243,20 @@ var CreateAcct = React.createClass({
       console.log(message);
     /* create user and authenticate in Firebase */
     } else {
-      fireBaseURL.createUser({
-        email    : this.state.email,
-        password : this.state.password
-      }, function(error, userData) {
-        if (error) {
-          // TODO: handle create errors
-          message = error;
-          console.log(message);
-        } else {
-          fireBaseURL.authWithPassword({
-            email    : self.state.email,
-            password : self.state.password
-          }, function() {
-            // TODO: handle auth errors
-            return;
-          });
-          /* record user info to user table */
-          self.createUser(userData);
-          self.setState({
-            email: '',
-            password: '',
-            password2: '',
-            username: ''
-          });
-          message = "Successfully created user account with uid: " + userData.uid;
-          console.log(message);
-          console.log(userData);
-        }
+      auth.createUserWithEmailAndPassword(self.state.email, self.state.password).then(function(result){
+        self.createUser(result);
+        self.setState({
+          email: '',
+          password: '',
+          password2: '',
+          username: ''
+        });
+      }).catch(function(error) {
+        console.log(error.code);
+        console.log(error.message);
       });
+      /* record user info to user table */
+
     }
   },
   /**
@@ -282,8 +270,8 @@ var CreateAcct = React.createClass({
       var usersTable = fireBaseURL.child('users');
       usersTable.child(userData.uid).set({
         username: self.state.username,
-        email: self.state.email,
-        date_created: Firebase.ServerValue.TIMESTAMP
+        email: userData.email,
+        date_created: firebase.database.ServerValue.TIMESTAMP
       });
       return true;
   },
@@ -855,9 +843,9 @@ var Logout = React.createClass({
     e.preventDefault();
     let userRef = fireBaseURL.child('users');
       userRef.child(this.props.userAuth.uid).update({
-        lastLoggedOut: Firebase.ServerValue.TIMESTAMP
+        lastLoggedOut: firebase.database.ServerValue.TIMESTAMP
       });
-    fireBaseURL.unauth();
+    auth.signOut();
   },
   render: function() {
     return (
@@ -881,14 +869,7 @@ var Logout = React.createClass({
 
 var ChangePass = React.createClass({
   getInitialState: function() {
-    return { oldPass: '', newPass: '', newPass2: '' };
-  },
-  /**
-  * @description Synchronize form field with state
-  * @param {object} e - onChange event object
-  */
-  handleOldPass: function(e) {
-    this.setState({ oldPass: e.target.value });
+    return { newPass: '', newPass2: '' };
   },
   /**
   * @description Synchronize form field with state
@@ -912,29 +893,27 @@ var ChangePass = React.createClass({
     var self = this;
     var message;
     var emailRef = fireBaseURL.child('users').child(this.props.userAuth.uid).child('email');
-    console.log(emailRef);
     emailRef.once("value", function(snapshot) {
-      console.log(snapshot);
       if (self.state.newPass != self.state.newPass2) {
         message = "New Passwords do not match!";
         console.log(message);
       } else {
-        fireBaseURL.changePassword({
-          email       : snapshot.val(),
-          oldPassword : self.state.oldPass,
-          newPassword : self.state.newPass
-        }, function(error) {
-          if (error) {
+        auth.currentUser.updatePassword(self.state.newPass2).then(function(){
+          message = "Password changed successfully";
+          ReactDOM.render(
+          <Compare userAuth={self.props.userAuth} />,
+            document.getElementById('page-holder')
+          );
+          console.log(message);
+        }, function(error){
+          if (error.code == 'auth/requires-recent-login') {
+            message = "Not recently authenticated. Please log out and log back in and try again.";
+            console.log(message);
+          } else {
             message = "Error changing password.";
             console.log(message);
-            console.log(error);
-          } else {
-            message = "Password changed successfully";
-            ReactDOM.render(
-            <PriceApp userAuth={self.props.userAuth} />,
-              document.getElementById('page-holder')
-            );
-            console.log(message);
+            console.log(error.code);
+            console.log(error.message);
           }
         });
       }
@@ -947,17 +926,6 @@ var ChangePass = React.createClass({
         <form>
           <div className="user-form">
             <h4 className="text-center">Change your password</h4>
-            <div className="form-group">
-              <label for="oldPswrd">Old password</label>
-              <input
-                className="form-control"
-                type="password"
-                id="oldPswrd"
-                autoFocus
-                value={this.state.oldPass}
-                onChange={this.handleOldPass}
-                />
-            </div>
             <div className="form-group">
               <label>New Password</label>
               <input
