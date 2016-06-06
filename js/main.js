@@ -621,11 +621,17 @@ var PriceApp = React.createClass({
     };
   },
   render: function() {
+    //TODO: chnge unit selector to inline radio buttons
     var self = this;
     return (
       <div className="col-xs-12 align-center">
         <div className="row">
           <h3>Record a price</h3>
+          <div className="btn-group btn-group-lg btn-group-justified" role="group" aria-label="unit type">
+            <a type="button" onClick={this.weightUnits} className="btn btn-primary">Weight</a>
+            <a type="button" onClick={this.volumeUnits} className="btn btn-info">Volume</a>
+            <a type="button" onClick={this.numberUnits} className="btn btn-primary">Number</a>
+          </div>
           <PriceItem
             units={self.state.units ? self.state.units : "blah"}
             unitgrouping={self.state.unitGrouping}
@@ -695,7 +701,6 @@ var CompItem = React.createClass({
   mixins: [ReactFireMixin, PricedItemMixin],
   render: function() {
     var self = this;
-
     var helpText = function() {
       var helpTxt;
       switch (self.props.units) {
@@ -807,9 +812,104 @@ var PriceItem = React.createClass({
     }
   },
   render: function() {
-    return null;
     //TODO: Build PriceItem component
+    var self = this;
+    var helpText = function() {
+      var helpTxt;
+      switch (self.props.units) {
+        case 'weight':
+          helpTxt = "e.g. 250 mL"
+          break;
+        case 'items':
+          helpTxt = "e.g. 2 dozen"
+          break;
+        case 'volume':
+        default:
+          helpTxt = "e.g. 355 mL"
+      }
+      return helpTxt;
+    }
 
+    var createUnits = function(item, index) {
+      return <option
+              key={index}
+              value={item}
+              onChange={self.handleUnitChange}
+            >{item}</option>;
+    }
+
+    var createUnitSelect = function() {
+      return (
+        <div className="col-xs-5 form-group">
+          <label for="itemUnit">Unit</label>
+            <select
+              className="form-control"
+              id="itemUnit"
+              onChange={self.handleUnitChange}
+              value={self.state.itemUnit}
+              aria-describedby="helpAmount"
+            >
+              <option disabled selected> - </option>
+              {self.props.unitgrouping.map(createUnits)}
+            </select>
+            <span id="helpAmount" class="help-block"><h6>{helpText()}</h6></span>
+        </div>
+      )
+    };
+
+    return (
+      <form className="col-sm-6">
+        <div>
+          <div className="user-form compare-form row">
+            <div className="row">
+              <div className="col-xs-12 form-group">
+                <label for="itemDescription">Name/Description</label>
+                <input
+                  className="form-control"
+                  type="text"
+                  id="itemDescription"
+                  placeholder="Brand name, description, etc."
+                  value={this.state.itemName}
+                  onChange={this.handleNameChange}
+                />
+              </div>
+              <div className="col-xs-12">
+              <div className="row">
+                <div className="col-xs-4 form-group">
+                <label for itemPrice>Price ($)</label>
+                  <input
+                    className="form-control"
+                    type="number"
+                    id="itemPrice"
+                    placeholder="Price"
+                    min="0.00"
+                    value={this.state.itemPrice}
+                    onFocus={this.clearPrice}
+                    onBlur={this.restorePriceDefault}
+                    onChange={this.handlePriceChange}
+                  />
+                </div>
+                <div className="col-xs-3 form-group">
+                  <label for="itemAmount">Amount</label>
+                  <input
+                    className="form-control"
+                    type="number"
+                    id="itemAmount"
+                    min="1"
+                    value={this.state.itemAmount}
+                    onFocus={this.clearAmount}
+                    onBlur={this.restoreAmountDefault}
+                    onChange={this.handleAmountChange}
+                  />
+                </div>
+                {createUnitSelect()}
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    )
   }
 });
 
